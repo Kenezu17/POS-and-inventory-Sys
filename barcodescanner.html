@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrewPos</title>
+</head>
+   <style>
+    body{
+        font-family: Arial, sans-serif;
+    }
+    .panel{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 400px;
+        background-color: hsla(61, 65%, 45%, 0.226);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        height: 470px;
+      
+    }
+     input{
+        width: 200px;
+        height: 20px;
+       margin-bottom: 5px;
+       border-radius: 5px;
+
+     }
+     #unit{
+        width: 200px;
+        height: 20px;
+        border-radius: 5px;
+     }
+    h2{
+        margin-right: 150px;
+    }
+    label{
+        margin-right: 160px;
+    }
+    #reader{
+     border: black 1px solid;
+     width: 250px;
+     height: 150px;
+    }
+    
+    .btn{
+        margin-top: 20px;
+          font-weight: 300px;
+    }
+    .save-btn{
+        background-color: rgba(53, 185, 0, 0.863);
+        border: none;
+        width: 100px;
+        height: 30px;
+        margin-right: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border-radius: 20px;
+         
+    }
+    .save-btn:hover{
+       background-color: rgb(179, 233, 166); 
+       
+    }
+ .close-btn{
+        background-color: rgba(248, 62, 62, 0.863);
+        border: none;
+        width: 100px;
+        height: 30px;
+        margin-right: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border-radius: 20px;
+         
+    }
+    .close-btn:hover{
+       background-color:rgba(161, 37, 37, 0.719);
+       
+    }
+
+
+   </style>
+<body>
+    <div class="panel">
+        <h2> BrewPos Scanner</h2>
+   
+   <div id="reader"></div>
+   <p id="cameraStatus" style="color: red; font-size: 14px;"></p>
+    
+   <label>Barcode</label>
+   <input type="text" id="barcode" readonly>
+
+   <label>Quantity</label>
+   <input type="number" id="qty">
+
+   <label>Unit</label>
+    <select id="unit">
+     <option value=""></option>
+     <option value="kg">kg</option>
+     <option value="L">L</option>
+     <option value="g">g</option>
+     <option value="pcs">pcs</option>
+     <option value="ml">ml</option>
+     <option value="cup">cup</option>
+     <option value="dozen">dozen</option>
+     <option value="pack">pack</option>
+     <option value="box">box</option>
+     <option value="roll">roll</option>
+    </select>
+    <div class="btn">
+    <button class="save-btn">Save</button>
+    <button class="close-btn">Close</button>
+    </div>
+   </div> 
+</body>
+</html>

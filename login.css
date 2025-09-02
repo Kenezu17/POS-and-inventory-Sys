@@ -83,6 +83,7 @@ p {
   border-radius: 6px;
   margin-bottom: 15px;
   font-size: 14px;
+  
 }
 
 .form-group {
@@ -95,12 +96,14 @@ label {
   margin-bottom: 5px;
   font-size: 14px;
   font-weight: bold;
+  align-items: center;
 }
 
 
 .input-container {
   position: relative;
   width: 100%;
+ 
 }
 
 .input-container i {
@@ -141,11 +144,9 @@ label {
 }
 
 #user,#pass{
-text-align: left;
+text-align: left,center;
 display: block;
 margin-bottom: 5px;
 font-weight: bold;
-font-family:  'Raleway', sans-serif; ;
-
-  
+font-family:  'Raleway', sans-serif;   
 }

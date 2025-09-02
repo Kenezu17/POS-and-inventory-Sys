@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZXing Barcode Scanner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    video {
+      width: 100%;
+      max-width: 420px;
+      border: 2px solid #333;
+      border-radius: 10px;
+    }
+    #result {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      word-break: break-all;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 420px;
+    }
+    button, select {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+    }
+    button.primary { background: #2b7cff; color: #fff; border-color: #2b7cff; }
+  </style>
+</head>
+<body>
+  <h2> BrewPos Scanner</h2>
+
+  
+  <div class="row">
+    <select id="cameraSelect"></select>
+    <button id="startBtn" class="primary">Start</button>
+    <button id="stopBtn">Stop</button>
+  </div>
+
+
+  <video id="video" autoplay playsinline></video>
+
+
+  <div id="result">Scan result will appear here…</div>
+
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      const codeReader = new ZXing.BrowserMultiFormatReader();
+      const videoEl   = document.getElementById('video');
+      const resultEl  = document.getElementById('result');
+      const startBtn  = document.getElementById('startBtn');
+      const stopBtn   = document.getElementById('stopBtn');
+      const camSelect = document.getElementById('cameraSelect');
+
+      let devices = [];
+      let currentDeviceId = null;
+
+      // 1) List cameras and populate the dropdown
+      async function enumerateCameras() {
+        devices = await codeReader.listVideoInputDevices();
+
+        camSelect.innerHTML = "";
+        devices.forEach((d, i) => {
+          const opt = document.createElement('option');
+          opt.value = d.deviceId;
+          opt.textContent = d.label || `Camera ${i + 1}`;
+          camSelect.appendChild(opt);
+        });
+
+        // Prefer back camera when possible
+        const back = devices.find(d =>
+          (d.label || '').toLowerCase().includes('back') ||
+          (d.label || '').toLowerCase().includes('rear') ||
+          (d.label || '').toLowerCase().includes('environment')
+        );
+        currentDeviceId = (back ? back.deviceId : (devices[0] && devices[0].deviceId)) || null;
+        if (currentDeviceId) camSelect.value = currentDeviceId;
+      }
+
+      // 2) Start scanning
+      async function start() {
+        if (!currentDeviceId) {
+          resultEl.textContent = 'No camera found.';
+          return;
+        }
+
+        // Decode continuously from selected camera into the video element
+        codeReader.decodeFromVideoDevice(currentDeviceId, videoEl, (result, err) => {
+          if (result) {
+            resultEl.textContent = `✅ Scanned: ${result.text}`;
+            // If you want to stop after first hit, uncomment:
+            // codeReader.reset();
+          }
+          // NotFoundException = no code in current frame, this is normal while scanning
+          if (err && !(err instanceof ZXing.NotFoundException)) {
+            console.error(err);
+          }
+        });
+      }
+
+      // 3) Stop scanning and release camera
+      function stop() {
+        codeReader.reset(); // stops stream + clears callbacks
+      }
+
+      // Wire up UI
+      camSelect.addEventListener('change', () => {
+        currentDeviceId = camSelect.value;
+        stop(); // if running
+      });
+      startBtn.addEventListener('click', start);
+      stopBtn.addEventListener('click', stop);
+
+      // iOS/Safari labels are empty until user grants permission once.
+      // If your dropdown shows blank labels, click "Start" first, approve camera,
+      // then call enumerateCameras() again to get real labels.
+      await enumerateCameras();
+    });
+  </script>
+</body>
+</html>
