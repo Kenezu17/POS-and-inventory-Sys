@@ -783,10 +783,11 @@ margin-top: 30px;
  border-radius: 10px;
  width: 100px;
  border: none;
+ height: 30px; ;
 
 }
 .close{
- background-color: rgb(255, 6, 6); color: white;
+ background-color: rgb(233, 12, 45); color: white;
  border-radius: 10px;
  height: 30px;
  width: 100px;
@@ -850,21 +851,22 @@ border: none;
       gap: 30px; 
 
     }
-    .Save-btn{
+    .sav{
         background-color: rgba(53, 185, 0, 0.863);
         border: none;
         width: 100px;
         height: 30px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         border-radius: 20px;
+        margin-bottom: 20px;
          
     }
-    .Save-btn:hover{
+    .sav:hover{
        background-color: rgb(179, 233, 166); 
        
     }
- .Close-btn{
-        background-color: rgba(248, 62, 62, 0.863);
+ .cls{
+        background-color: rgb(209, 9, 9);
         border: none;
         width: 100px;
         height: 30px;
@@ -872,7 +874,7 @@ border: none;
         border-radius: 20px;
          
     }
-    .Close-btn:hover{
+    .cls{
        background-color:rgba(161, 37, 37, 0.719);
        
     }

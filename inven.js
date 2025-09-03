@@ -14,12 +14,12 @@ menuBtn.addEventListener("click", function() {
       const productsSection = document.querySelector('#products');
       const navLinks = document.querySelectorAll(".nav a")
       const currentpage = location.pathname.split('/').pop();
+      // add products
       const addBtn = document.querySelector('.add-BTN');
       const modal = document.querySelector('.side-Panel');
-      const closeBtn = document.querySelector('.close');
-     
+      const closeBtn = document.querySelector('.cls');
+     //scanner
       const additem = document.querySelector('.additem')
-
       const Panel = document.querySelector('.panel')
       const cl = document.querySelector('.close')
 
@@ -44,13 +44,12 @@ menuBtn.addEventListener("click", function() {
 
     addBtn.addEventListener('click', function() {
      modal.classList.add('active');
+     console.log('cick')
   });
 
-  closeBtn.addEventListener('click', function() {
-    modal.classList.remove('active');
-   
-    
-  });
+  closeBtn.addEventListener('click', function(){
+    modal.classList.remove('active')
+  })
   additem.addEventListener('click', function(){
     Panel.classList.add('active');
      
