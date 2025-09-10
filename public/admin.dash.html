@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POS Dashboard</title>
+  <link rel="stylesheet" href="admin.dash.css">
+
+  
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body >
+ 
+  <div class="layout">
+  <aside class="sidebar" id ="sidebar">
+      <div class="logo">
+        <p>BrewPOS☕</p>
+        <button id="menu-btn" class="bx bx-menu"></button>
+      </div>
+      <ul class="nav">
+       <li><a href="admin.dash.html"><i class='bx bxs-dashboard'></i><span> Dashboard</span></a></li>
+       <li><a href="inven.html"><i class='bx bxs-box'></i><span> Inventory</span></a></li>
+        <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i><span> Reports</span></a></li>
+        <li><a href="#"><i class='bx bxs-user'></i><span> Employee</span></a></li>
+        <li><a href="#"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
+        <li><a href="#"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
+        <div class="admin">
+      <img src="/image/letter-a.png" alt="admin" class="user-pic" width="30px" height="30px">
+      <span class="admin-name">Admin</span>
+      <p id="pr" href="#">admin@brewPos.com <i class="bx bxs-chevron-down"></i></p>
+     </div>
+      </ul>
+    </aside>
+
+
+  <section class="main">
+    <header>
+    <h1>Dashboard</h1>
+    <p>Welcome back! Here's what's happening with your business today.</p>
+   
+    <div  class="cards">
+      <div  class="card">
+        <h3>Total Sales</h3>
+        <p>100,03</p>
+      </div>
+      <div id ="sales"class="card">
+        <h3>Revenue</h3>
+        <p id ="rev-total">₱ 200,000</p>
+      </div>
+      <div class="card">
+        <h3>Today's Orders</h3>
+        <p>1000</p>
+      </div>
+    </div>
+    </header>
+
+    <header>
+    <div  id ="chart" class="analytics">
+      <div class="analytics-header">
+        <h3>Sales Analytics</h3>
+        <div>
+          <button class="active">Month</button>
+          <button>Year</button>
+        </div>
+      </div>
+      <div class="chart-placeholder"></div>
+    </div>
+
+     <canvas id="chart" class="analytics"></canvas>
+   </header>
+
+    <div class="recent">
+      <h3>Recent Activity</h3>
+      <ul>
+        <li>🟢 New order received <span>2 min ago</span></li>
+        <li>🟣 Product updated <span>22 min ago</span></li>
+        <li>🔴 Low stock alert <span>1 hr ago</span></li>
+      </ul>
+    </div>
+
+
+    <div class="sellers">
+      <div class="seller-card">
+        <h3>1 Top Seller</h3>
+        <p>N/A</p>
+      </div>
+      <div class="seller-card">
+        <h3>2 Top Seller</h3>
+        <p>N/A</p>
+      </div>
+      <div class="seller-card">
+        <h3>3 Top Seller</h3>
+        <p>N/A</p>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+</body>
+<script src="dash.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

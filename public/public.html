@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Phone Scanner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: rgb(255, 212, 212);
+    display: flex;
+    flex-direction: column;   
+    align-items: center;    
+    justify-content: center;  
+    min-height: 100vh;       
+    margin: 0;
+}
+
+div {
+  border: black solid 1px;
+    padding: 20px;
+    margin: 20px;
+    text-align: center;       
+}
+
+
+canvas {
+    width: 640px;
+    height: 180px;
+    margin: 20px auto;      
+}
+
+
+h1 {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(40px, 10vw, 80px);
+    text-align: center;
+}
+
+h2 {
+    font-size: clamp(30px, 6vw, 50px);
+    margin-top: 50px;
+    text-align: center;
+}
+#cameraStatus {
+    font-size: clamp(20px, 5vw, 50px);
+    text-align: center;
+}
+p {
+    font-size: clamp(20px, 5vw, 50px);
+    text-align: center;
+}
+#reader {
+    width: 600px;
+    margin-right: 50px;
+    text-align: center;
+}
+
+</style>
+<body>
+  <div>
+  <h1>BrewPos</h1>
+  <h2>Scanner</h2>
+  <div id="reader"></div>
+  <label>Barcode</label>
+  <p>Status: <span id="cameraStatus">Waiting...</span></p>
+  </div>
+  <script type="module" src="./scanner.js"></script>
+
+</body>
+</html>

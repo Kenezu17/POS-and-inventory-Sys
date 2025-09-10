@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inventory Management</title>
+    <link rel="stylesheet" href="inven.css" />
+    <link rel="stylesheet" href="message.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+</head>
+<body>
+
+   
+<div class="layout">
+       
+    <aside class="sidebar" id ="sidebar">
+      <div class="logo">
+        <p>BrewPOS☕</p>
+        <button id="menu-btn" class="bx bx-menu"></button>
+      </div>
+      <ul class="nav">
+       <li><a href="admin.dash.html" ><i class='bx bxs-dashboard'></i><span> Dashboard</span></a></li>
+       <li><a href="inven.html"><i class='bx bxs-box'></i><span> Inventory</span></a></li>
+        <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i><span> Reports</span></a></li>
+        <li><a href="#"><i class='bx bxs-user'></i><span> Employee</span></a></li>
+        <li><a href="#"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
+        <li><a href="#"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
+        <div class="admin">
+      <img src="/image/letter-a.png" alt="admin" class="user-pic" width="30px" height="30px">
+      <span class="admin-name">Admin</span>
+      <p id="pr" href="#">admin@brewPos.com <i class="bx bxs-chevron-down"></i></p>
+     </div>
+      </ul>
+    </aside>
+   
+    <div id="toast"></div>
+
+
+    
+
+  <div class="panel">
+        <h2> BrewPos Scanner</h2>
+    
+
+   <div class="latest-image" id="latestContainer">
+        
+          <img id="barimg" src="" alt="No scan yet" style="display:none;" >
+          <div id="placeholder" style="color:#9aa4bf;">No image</div>
+        </div>
+        <br><br>
+       <label for="barcode">Barcode</label>
+      <input id="barcode" readonly placeholder="No code yet" required>
+    
+   <label>Product</label>
+   <input type="text" id="p-name" required>
+   
+   
+   <label>Quantity</label>
+   <input type="number" id="qty" required>
+
+   <label for="category">Category:</label>
+     <select id="category" name="inventory" required>
+     <option value=""></option>
+     <option value="coffee & beverages">Coffee & Beverages</option>
+     <option value="food & ingredients">Food Ingredients</option>
+     <option value="consumables & supplies">Consumables & Supplies</option>
+     <option value="equipment & tools">Equipment & Tools</option>
+     <option value="cleaning & maintenance">Cleaning & Maintenance</option>
+    </select>
+
+
+   <label>Unit</label>
+    <select id="unit" required>
+     <option value=""></option>
+     <option value="kg">kg</option>
+     <option value="L">L</option>
+     <option value="g">g</option>
+     <option value="pcs">pcs</option>
+     <option value="ml">ml</option>
+     <option value="cup">cup</option>
+     <option value="dozen">dozen</option>
+     <option value="pack">pack</option>
+     <option value="box">box</option>
+     <option value="roll">roll</option>
+    </select>
+    <div class="Btn">
+    <button class="save">Add</button>
+    <button class="close">Close</button>
+    </div>
+    
+  </div>
+
+<!-- Inventory -->
+  <section class="active" id="inventory">
+    <div class="container">
+      <header>
+       <div>
+        <h1>Inventory Management</h1>
+        <p>Track and manage your coffee shop inventory</p>
+      </div>
+       <div class="status">
+      <div class="color">
+        <h3 class="info">Total Items</h3>
+        <p class="item-total">0</p>
+       </div>
+       <div class="color">
+       <h3 class="info">Low Stock </h3>
+       <p class="low-total">0</p>
+       </div>
+          <div class="color">
+          <h3 class="info">Categories</h3>
+          <p class="cat-total">0</p>
+          </div>
+     </div> 
+      <div class="btn">    
+      <button class="products-btn" data-target="products">Products</button>
+       <button class="additem" type="button"  >Add Item</button>
+       </div>
+    </header>        
+    <div class="search">
+      <input type="search" placeholder="Search inventory…" aria-label="Search inventory" />
+    </div>
+  <div id="restock-panel" class="restock_panel">
+   <div class="restock-content">
+    <h2>Restock</h2>
+    <form id="restock-form">
+      <label id="r">Quantity:</label>
+      <input type="number" id="edit-restock"  required>
+
+      <div class="restock-actions">
+        <button type="submit" class="Sve">Save</button>
+        <button type="button" class="cancel">Cancel</button>
+      </div>
+    </form>
+   </div>
+  </div>
+    <section class="inventory-list" aria-label="Inventory Items">
+         <div class="icon-circle" aria-hidden="true"></div>    
+    </section>
+  </section>
+     
+  
+ <section class="pro" id="products">
+    <div class="main">
+    <header class="head">
+       <div>
+        <h1>Products Management</h1>
+        <p>View and organize all your products in one place</p>
+       </div> 
+ 
+       <div class="p-btn">    
+       <button class="inv-btn" data-target="inventory">Inventory</button>
+       <button class="add-BTN" type="button" aria-label="Add Item">Add Product</button>
+       </div>
+    </header>
+   <form id="p-form">
+    <div class="side-Panel" id="sidepanel">
+       <h2 id="panelname">Products</h2>
+       <input type="text" id="productname" name="productname" placeholder="Product Name" required>
+       <input type="number" id="price" name="price" placeholder="Price" required>
+       <input type="file" id="productImage" name="productImage" accept="image/*" required> 
+       <img id="imagepre" accept="image/*">
+       <div class ="sidebtn">
+       <button type="submit" class="p-save">Save</button>
+       <button class="p-close" >Close</button>
+       </div>
+     </div>
+     </form>
+
+  <div id="edit-panel" class="mo-dal">
+  <div class="modal-content">
+    <h2>Edit Price</h2>
+    <form id="edit-form">
+      <label id="p">Price:</label>
+      <input type="number" id="edit-price"  required>
+
+      <div class="modal-actions">
+        <button type="submit" class="btnsave">Save</button>
+        <button type="button" class="btn-delete">Delete</button>
+        <button type="button" class="btn-cancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+   
+    <div class="sh">
+      <input type="search" placeholder="Search inventory…" aria-label="Search inventory" />
+    </div>
+
+    <section class="i-list" aria-label="Inventory Items">
+    </section>
+    </div>
+  </section>
+  
+   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script type="module" src="inven.js"></script>
+  <script type="module" src="sender.js"></script>
+
+</body>
+</html>
+
