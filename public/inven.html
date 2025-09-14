@@ -38,14 +38,10 @@
    
     <div id="toast"></div>
 
-
-    
-
-  <div class="panel">
+   <form class="item-form">
+     <div class="panel">
         <h2> BrewPos Scanner</h2>
-    
-
-   <div class="latest-image" id="latestContainer">
+     <div class="latest-image" id="latestContainer">
         
           <img id="barimg" src="" alt="No scan yet" style="display:none;" >
           <div id="placeholder" style="color:#9aa4bf;">No image</div>
@@ -87,12 +83,11 @@
      <option value="roll">roll</option>
     </select>
     <div class="Btn">
-    <button class="save">Add</button>
+    <button  type="submit" class="save">Add</button>
     <button class="close">Close</button>
-    </div>
-    
+    </div> 
   </div>
-
+  </form>
 <!-- Inventory -->
   <section class="active" id="inventory">
     <div class="container">
@@ -134,13 +129,18 @@
         <button type="submit" class="Sve">Save</button>
         <button type="button" class="cancel">Cancel</button>
       </div>
-    </form>
+      </form>
    </div>
   </div>
-    <section class="inventory-list" aria-label="Inventory Items">
+
+        <section class="inventory-list" aria-label="Inventory Items">
          <div class="icon-circle" aria-hidden="true"></div>    
     </section>
+    
+ </div>
   </section>
+  
+ 
      
   
  <section class="pro" id="products">
@@ -159,9 +159,9 @@
    <form id="p-form">
     <div class="side-Panel" id="sidepanel">
        <h2 id="panelname">Products</h2>
-       <input type="text" id="productname" name="productname" placeholder="Product Name" required>
-       <input type="number" id="price" name="price" placeholder="Price" required>
-       <input type="file" id="productImage" name="productImage" accept="image/*" required> 
+       <input type="text" id="productname" name="productname" placeholder="Product Name" >
+       <input type="number" id="price" name="price" placeholder="Price" >
+       <input type="file" id="productImage" name="productImage" accept="image/*" > 
        <img id="imagepre" accept="image/*">
        <div class ="sidebtn">
        <button type="submit" class="p-save">Save</button>
@@ -169,11 +169,10 @@
        </div>
      </div>
      </form>
-
+<form id="edit-form">
   <div id="edit-panel" class="mo-dal">
   <div class="modal-content">
     <h2>Edit Price</h2>
-    <form id="edit-form">
       <label id="p">Price:</label>
       <input type="number" id="edit-price"  required>
 

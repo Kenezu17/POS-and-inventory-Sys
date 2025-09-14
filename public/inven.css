@@ -907,6 +907,7 @@ margin-left: 30px;
   background: rgba(0,0,0,0.5);
   justify-content: center;
   align-items: center;
+  
 }
 .mo-dal h2{
   text-align: center;
@@ -918,6 +919,8 @@ margin-left: 30px;
   border-radius: 8px;
   width: 280px;
   height: 190px;
+  margin-top: 270px;
+  margin-left: 600px;
 }
 .modal-actions {
   margin-top: 18px;
@@ -1040,6 +1043,31 @@ font-weight: bold;
   border: none;
   font-weight: bold;
 }
+
+#toast {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+  opacity: 0;
+  transition: opacity 0.5s, bottom 0.5s;
+}
+
+#toast.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 50px;
+}
+
    
 @keyframes slideDown {
   from {

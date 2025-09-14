@@ -121,7 +121,7 @@ label {
   border-radius: 6px;
   font-size: 14px;
 }
-.btn {
+.logbtn {
   width: 100%;
   padding: 12px;
   background: #f3c669;
@@ -133,7 +133,7 @@ label {
   transition: 0.3s;
 }
 
-.btn:hover {
+.logbtn:hover {
   background: #e1b75d;
 }
 
@@ -150,3 +150,4 @@ margin-bottom: 5px;
 font-weight: bold;
 font-family:  'Raleway', sans-serif;   
 }
+

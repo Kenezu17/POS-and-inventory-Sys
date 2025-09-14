@@ -56,18 +56,17 @@
     </header>
 
     <header>
-    <div  id ="chart" class="analytics">
-      <div class="analytics-header">
-        <h3>Sales Analytics</h3>
-        <div>
-          <button class="active">Month</button>
-          <button>Year</button>
-        </div>
-      </div>
-      <div class="chart-placeholder"></div>
+   <div class="analytics">
+  <div class="analytics-header">
+    <h3>Sales Analytics</h3>
+    <div>
+      <button id="monthBtn" class="active">Month</button>
+      <button id="yearBtn">Year</button>
     </div>
+  </div>
+  <canvas id="salesChart"></canvas>
+</div>
 
-     <canvas id="chart" class="analytics"></canvas>
    </header>
 
     <div class="recent">
@@ -98,7 +97,7 @@
   </div>
 </section>
 </body>
-<script src="dash.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="dash.js"></script>
 </body>
 </html>
