@@ -24,10 +24,10 @@
       <ul class="nav">
        <li><a href="admin.dash.html" ><i class='bx bxs-dashboard'></i><span> Dashboard</span></a></li>
        <li><a href="inven.html"><i class='bx bxs-box'></i><span> Inventory</span></a></li>
-        <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i><span> Reports</span></a></li>
-        <li><a href="#"><i class='bx bxs-user'></i><span> Employee</span></a></li>
-        <li><a href="#"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
-        <li><a href="#"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
+        <li><a href="reports.html"><i class='bx bxs-bar-chart-alt-2'></i><span> Reports</span></a></li>
+        <li><a href="employee.html"><i class='bx bxs-user'></i><span> Employee</span></a></li>
+        <li><a href="barcode.html"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
+        <li><a href="setting.html"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
         <div class="admin">
       <img src="/image/letter-a.png" alt="admin" class="user-pic" width="30px" height="30px">
       <span class="admin-name">Admin</span>
@@ -51,12 +51,16 @@
       <input id="barcode" readonly placeholder="No code yet" required>
     
    <label>Product</label>
-   <input type="text" id="p-name" required>
+   <input type="text" readonly id="p-name" required>
    
+   <label>Price</label>
+    <input type="number" id="p-price" required>
    
    <label>Quantity</label>
    <input type="number" id="qty" required>
+  
 
+ 
    <label for="category">Category:</label>
      <select id="category" name="inventory" required>
      <option value=""></option>
@@ -88,6 +92,7 @@
     </div> 
   </div>
   </form>
+  
 <!-- Inventory -->
   <section class="active" id="inventory">
     <div class="container">
@@ -156,7 +161,7 @@
        <button class="add-BTN" type="button" aria-label="Add Item">Add Product</button>
        </div>
     </header>
-   <form id="p-form">
+    <form id="p-form">
     <div class="side-Panel" id="sidepanel">
        <h2 id="panelname">Products</h2>
        <input type="text" id="productname" name="productname" placeholder="Product Name" >
@@ -200,4 +205,3 @@
 
 </body>
 </html>
-

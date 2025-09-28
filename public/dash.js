@@ -133,6 +133,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   loadSalesData();
 
+//========================
+// Revenue and daily orders
+//========================
 
-
+fetch('http://localhost:3000/reports')
+.then(res => res.json())
+.then(data =>{
+  document.getElementById('rev-total').textContent  = 
+      `₱${parseFloat(data.totalRevenue || 0).toLocaleString()}`
+})
+fetch('http://localhost:3000/records')
+.then( res => res.json())
+.then(data =>{
+  document.getElementById('todaysales').textContent  = 
+   `${parseFloat(data.total_sales || 0).toLocaleString()}`
+  document.getElementById('todayorders').textContent  = 
+   `${parseFloat(data.total_quantity || 0).toLocaleString()}`
+})
 });

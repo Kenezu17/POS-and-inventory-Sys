@@ -66,6 +66,13 @@ p {
   <h2>Scanner</h2>
   <div id="reader"></div>
   <label>Barcode</label>
+   
+  <div id="errorBox" style="display:none; color: red; font-weight: bold; margin-top: 10px;"></div>
+
+<button id="enableSound">Enable Sound</button>
+<audio id="successSound" src="sounds/success.mp3" preload="auto"></audio>
+<audio id="errorSound" src="/sounds/error.mp3" preload="auto"></audio>
+
   <p>Status: <span id="cameraStatus">Waiting...</span></p>
   </div>
   <script type="module" src="./scanner.js"></script>

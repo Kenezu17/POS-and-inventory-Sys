@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Revenue Report</title>
+  <link rel="stylesheet" href="reports.css">
+   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+</head>
+<body>
+ 
+     <aside class="sidebar" id ="sidebar">
+      <div class="logo">
+        <p  style="font-size: 22px; font-weight: bold; color: black;" >BrewPOS☕</p>
+        <button id="menu-btn" class="bx bx-menu"></button>
+      </div>
+      <ul class="nav">
+       <li><a href="admin.dash.html" ><i class='bx bxs-dashboard'></i><span> Dashboard</span></a></li>
+       <li><a href="inven.html"><i class='bx bxs-box'></i><span> Inventory</span></a></li>
+        <li><a href="reports.html"><i class='bx bxs-bar-chart-alt-2'></i><span> Reports</span></a></li>
+        <li><a href="employee.html"><i class='bx bxs-user'></i><span> Employee</span></a></li>
+        <li><a href="barcode.html"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
+        <li><a href="setting.html"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
+        <div class="admin">
+      <img src="/image/letter-a.png" alt="admin" class="user-pic" width="30px" height="30px">
+      <span class="admin-name">Admin</span>
+      <p id="pr" href="#">admin@brewPos.com <i class="bx bxs-chevron-down"></i></p>
+     </div>
+      </ul>
+    </aside>
+ <section class="main">
+  <div class="container">
+    <h2>Revenue Report</h2>
+    <p>Detailed revenue analysis and performance metrics</p>
+    
+  </div>
+  <section class="monthly">
+    <div class="printbtn">
+      <button class="print" onclick="window.print()">🖨️ Print Report</button>
+      <button class="btn-year">Year</button>
+    </div>
+    <div class="cards">
+    <div class="card">
+      <p>Total Revenue</p>
+      <h2 id="totalRevenueMonth">$2,174,511</h2>
+
+    </div>
+    <div class="card">
+      <p>Total Profit</p>
+      <h2 id="totalProfitMonth" class="green">$801,811</h2>
+     
+    </div>
+    <div class="card">
+      <p>Average Growth</p>
+      <h2 id="avgGrowthMonth" class="blue">21.7%</h2>
+ 
+    </div>
+  </div>
+    
+    <table id="monthlyTable">
+      <h3>Monthly Revenue</h3>
+      <thead>
+        <tr>
+          <th>Month</th><th>Revenue</th><th>Profit</th><th>Expenses</th><th>Growth</th><th>Margin</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="yearly">
+    <div class="printbtn">
+      <button class="print" onclick="window.print()">🖨️ Print Report</button>
+      <button class="btn-month">Monthly</button>
+    </div>
+    <div class="cards">
+    <div class="card">
+      <p>Total Revenue</p>
+      <h2 id="totalRevenueYear">$2,17</h2>
+     
+    </div>
+    <div class="card">
+      <p>Total Profit</p>
+      <h2 id="totalProfitYear" class="green">$811</h2>
+      
+    </div>
+    <div class="card">
+      <p>Average Growth</p>
+      <h2 id ="avgGrowthYear" class="blue">21.7%</h2>
+
+    </div>
+  </div>
+    <table id="yearly-table">
+   <h3> Yearly Revenue</h3>
+      <thead>
+
+        <tr>
+          
+          <th>Year</th><th>Revenue</th><th>Profit</th><th>Expenses</th><th>Growth</th><th>Margin</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</section>
+
+ </body>
+ <script src="reports.js"></script>
+</html>

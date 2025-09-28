@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="employee.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+  <title>Employee Management</title>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <p style="font-size: 22px; color: #000;">BrewPOS☕</p>
+      <button id="menu-btn" class="bx bx-menu" aria-label="Toggle Menu"></button>
+    </div>
+
+    <ul class="nav">
+      <li><a href="admin.dash.html"><i class="bx bxs-dashboard"></i><span> Dashboard</span></a></li>
+      <li><a href="inven.html"><i class="bx bxs-box"></i><span> Inventory</span></a></li>
+      <li><a href="reports.html"><i class="bx bxs-bar-chart-alt-2"></i><span> Reports</span></a></li>
+      <li><a href="employee.html" class="active"><i class="bx bxs-user"></i><span> Employee</span></a></li>
+      <li><a href="barcode.html"><i class="bx bxs-barcode"></i><span> Barcode</span></a></li>
+      <li><a href="setting.html"><i class="bx bxs-cog"></i><span> Settings</span></a></li>
+    </ul>
+
+    <div class="admin">
+      <img src="/image/letter-a.png" alt="Admin profile" class="user-pic" width="30" height="30">
+      <span class="admin-name">Admin</span>
+      <p id="pr">admin@brewPos.com <i class="bx bxs-chevron-down"></i></p>
+    </div>
+  </aside>
+
+  <!-- Main Section -->
+  <section class="main">
+    <div id="toast"></div>
+
+    <header class="emp-header">
+      <h1>Employee Management</h1>
+      <p>Manage your coffee shop team</p>
+    </header>
+
+    <button class="addemploye">+ Add Employee</button>
+
+    <div class="search">
+      <input type="search" placeholder="Search employees…" aria-label="Search employees">
+    </div>
+
+    <div id="cardz"></div>
+
+    <!-- Modal Form -->
+    <form class="modal" id="credentialsModal" method="POST" enctype="multipart/form-data">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <h2>🔑 Create Account Credentials</h2>
+        <p>Create login credentials for <b id="fulname"></b></p>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+          <label for="profilePic" class="upload-icon">
+            <i class="bx bx-upload"></i> 
+          </label>
+          <input type="file" id="profilePic" name="profile" accept="image/*" hidden>
+
+          <div class="profile-pic">
+            <img id="preview" class="preview" alt="Profile Preview" style="display:none;">
+          </div>
+          <div class="upload-text">Upload employee photo (optional)</div>
+        </div>
+
+        <!-- Employee Details -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fname">First Name *</label>
+            <input id="fname" name="fname" type="text" placeholder="Enter first name" required>
+          </div>
+          <div class="form-group">
+            <label for="lname">Last Name *</label>
+            <input id="lname" name="lname" type="text" placeholder="Enter last name" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact">📞 Contact Number *</label>
+          <input id="contact" name="contact" type="text" pattern="\d{11}" maxlength="11" placeholder="Enter 11-digit number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="address">🏠 Address *</label>
+          <textarea id="address" name="address" rows="3" placeholder="Enter full address" required></textarea>
+        </div>
+
+        <!-- Credentials -->
+        <div class="form-group">
+          <label for="username">👤 Username</label>
+          <input id="username" name="username" type="text" placeholder="Enter username">
+        </div>
+
+        <div class="form-group">
+          <label for="password">🔑 Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password">
+           
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn">Cancel</button>
+          <button type="submit" class="create-btn">Create</button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <script src="employee.js"></script>
+</body>
+</html>

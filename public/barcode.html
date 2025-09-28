@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="barcode.css">
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    <aside class="sidebar" id ="sidebar">
+      <div class="logo">
+        <p>BrewPOS☕</p>
+        <button id="menu-btn" class="bx bx-menu"></button>
+      </div>
+      <ul class="nav">
+       <li><a href="admin.dash.html"><i class='bx bxs-dashboard'></i><span> Dashboard</span></a></li>
+       <li><a href="inven.html"><i class='bx bxs-box'></i><span> Inventory</span></a></li>
+        <li><a href="reports.html"><i class='bx bxs-bar-chart-alt-2'></i><span> Reports</span></a></li>
+        <li><a href="employee.html"><i class='bx bxs-user'></i><span> Employee</span></a></li>
+        <li><a href="barcode.html"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
+        <li><a href="setting.html"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
+        <div class="admin">
+      <img src="/image/letter-a.png" alt="admin" class="user-pic" width="30px" height="30px">
+      <span class="admin-name">Admin</span>
+      <p id="pr" href="#">admin@brewPos.com <i class="bx bxs-chevron-down"></i></p>
+     </div>
+      </ul>
+    </aside>
+    <section class="main">
+      <div id="toast"></div>
+      <header>
+      <h2>Generate Barcode</h2>
+      <p> Generate and manage product barcodes</p>
+    </header>
+   <div class="form-container">
+    <H2 class="title">Barcode Generator</H2>
+    <label>Product</label>
+    <input type="text" id="productName" placeholder="Enter Product Name" />
+    <label >Barcode</label>
+    <input type="text" id="barcodeInput" placeholder="Enter EAN-13 Barcode" maxlength="13" />
+    <button id="sv" class="btn" onclick="saveToDB()">Save & Generate</button>
+    <button id="pb" class="btn" onclick="printBarcodes()">Print Barcode</button>
+    <button id="cb" class="btn" onclick="clearBarcodes()">Clear Barcodes</button>
+
+  </div>
+
+  <div class="barcode-grid" id="barcodeGrid"></div>
+    </section>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="barcode.js"></script>
+</html>

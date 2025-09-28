@@ -21,10 +21,10 @@
       <ul class="nav">
        <li><a href="admin.dash.html"><i class='bx bxs-dashboard'></i><span> Dashboard</span></a></li>
        <li><a href="inven.html"><i class='bx bxs-box'></i><span> Inventory</span></a></li>
-        <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i><span> Reports</span></a></li>
-        <li><a href="#"><i class='bx bxs-user'></i><span> Employee</span></a></li>
-        <li><a href="#"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
-        <li><a href="#"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
+        <li><a href="reports.html"><i class='bx bxs-bar-chart-alt-2'></i><span> Reports</span></a></li>
+        <li><a href="employee.html"><i class='bx bxs-user'></i><span> Employee</span></a></li>
+        <li><a href="barcode.html"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
+        <li><a href="setting.html"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
         <div class="admin">
       <img src="/image/letter-a.png" alt="admin" class="user-pic" width="30px" height="30px">
       <span class="admin-name">Admin</span>
@@ -42,15 +42,15 @@
     <div  class="cards">
       <div  class="card">
         <h3>Total Sales</h3>
-        <p>100,03</p>
+        <p id="todaysales">100,03</p>
       </div>
       <div id ="sales"class="card">
         <h3>Revenue</h3>
-        <p id ="rev-total">₱ 200,000</p>
+        <p id ="rev-total" style="color:blue;">₱ 200,000</p>
       </div>
       <div class="card">
         <h3>Today's Orders</h3>
-        <p>1000</p>
+        <p id="todayorders" style="color:green;">1000</p>
       </div>
     </div>
     </header>
@@ -99,5 +99,5 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="dash.js"></script>
-</body>
+
 </html>

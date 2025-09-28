@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Barcode Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    
+  </style>
+</head>
+<body>
+  <h2>Generate Barcode</h2>
+  
+  <div class="form-container">
+    <input type="text" id="productName" placeholder="Enter Product Name" />
+    <input type="text" id="barcodeInput" placeholder="Enter EAN-13 Barcode" maxlength="13" />
+    <button class="btn" onclick="saveToDB()">Save & Generate</button>
+    <button class="btn" onclick="window.print()">Print Barcode</button>
+  </div>
+
+  <div class="barcode-grid" id="barcodeGrid"></div>
+
+  <!-- JsBarcode library -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script>
+   
+  </script>
+</body>
+</html>

@@ -10,6 +10,43 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ==============================
+  // Search
+  // ==============================
+
+  const inventorySearch = document.querySelector('#inventory .search input');
+
+    inventorySearch?.addEventListener('input', () => {
+    const query = inventorySearch.value.toLowerCase();
+
+    document.querySelectorAll('.inventory-list .card').forEach(card => {
+     const name = card.querySelector('.item-title').textContent.toLowerCase();
+
+     if (name.includes(query)) {
+       card.style.display = 'flex';
+     } else {
+       card.style.display = 'none';
+     }
+   });
+});
+
+ const ProductSearch = document.querySelector('#products .sh input');
+
+    ProductSearch?.addEventListener('input', () => {
+    const query = ProductSearch.value.toLowerCase();
+
+    document.querySelectorAll('.i-list .cd').forEach(card => {
+     const name = card.querySelector('.item-name').textContent.toLowerCase();
+
+     if (name.includes(query)) {
+       card.style.display = 'flex';
+     } else {
+       card.style.display = 'none';
+     }
+   });
+});
+
+
+  // ==============================
   // Section Switching
   // ==============================
   const productsBtn = document.querySelector('.products-btn');
@@ -215,12 +252,13 @@ loadinven();
     const items = {
       barcode: document.getElementById('barcode').value.trim(),
       item_name: document.getElementById('p-name').value.trim(),
+      price: parseFloat(document.getElementById('p-price').value.trim()),
       categories: document.getElementById('category').value.trim(),
       quantity: parseInt(document.getElementById('qty').value),
       unit: document.getElementById('unit').value.trim()
     }
 
-    if ( !items.item_name || !items.categories || isNaN(items.quantity) || items.quantity < 1 || !items.unit) {
+    if ( !items.item_name || !items.categories ||!items.price ||isNaN(items.price || isNaN(items.quantity) || items.quantity < 1 || !items.unit)) {
       showmess("Please complete all fields properly", "error");
       return;
     }
@@ -243,6 +281,7 @@ loadinven();
     document.getElementById('qty').value = "";
     document.getElementById('unit').value = "";
     document.getElementById('category').value = "";
+    document.getElementById('p-price').value = "";
     if (icondisplay) icondisplay.innerHTML = "";
   });
 
@@ -331,7 +370,6 @@ function addProductCard(id, name, price, imageData) {
   productList.appendChild(card);
 }
 
-
 async function loadProducts() {
   try {
     const res = await fetch("http://localhost:3000/products");
@@ -340,13 +378,14 @@ async function loadProducts() {
     productList.innerHTML = "";
     products.forEach((p) => {
       const price = parseFloat(p.price);
-      const imageData = p.image; 
-      addProductCard(p.id, p.product_name, price, imageData);
+      const imageUrl = p.image ? `http://localhost:3000/uploads/${p.image}` : null;
+      addProductCard(p.id, p.product_name, price, imageUrl);
     });
   } catch (err) {
     showmess("Error loading products: " + err.message, "error");
   }
 }
+
 loadProducts();
 
 
@@ -365,14 +404,14 @@ document.querySelector(".p-save").addEventListener("click", async (e) => {
   }
 
   try {
+    const formData = new FormData();
+    formData.append("product_name", name);
+    formData.append("price", price);
+    formData.append("image", document.getElementById("productImage").files[0]);
+
     const res = await fetch("http://localhost:3000/products", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        product_name: name,
-        price: price,
-        image: selectedImageData,
-      }),
+      body: formData,
     });
 
     const result = await res.json();
@@ -382,7 +421,10 @@ document.querySelector(".p-save").addEventListener("click", async (e) => {
     }
 
     showmess("Successfully added to database", "successful");
-    addProductCard(result.productId, name, price, selectedImageData);
+
+
+    const imageUrl = `http://localhost:3000/uploads/${result.imageFile}`;
+    addProductCard(result.productId, name, price, imageUrl);
 
     document.getElementById("p-form").reset();
     selectedImageData = null;
@@ -390,6 +432,8 @@ document.querySelector(".p-save").addEventListener("click", async (e) => {
     showmess("Error saving product: " + err.message, "error");
   }
 });
+
+
 
 
 document.getElementById("edit-form").addEventListener("submit", async (e) => {

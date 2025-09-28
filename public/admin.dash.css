@@ -19,7 +19,7 @@ html, body {
 body {
   display: flex;
   font-family: Arial, sans-serif;
-  background-color: hsla(61, 65%, 45%, 0.226);
+  background-color: #f7f7f7;
   height: 100vh;
   overflow-y: auto;
 }  
@@ -156,7 +156,7 @@ text-align: top;
 
 .main {
   flex: 1;
-  margin-left:220px;
+  margin-left:180px;
   display: flex;
   flex-direction: column;
   padding: 50px;
@@ -198,7 +198,7 @@ header p{
  
 }
 .card{
-  background: #dfded6b2;
+  background: #ffffff;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -211,7 +211,7 @@ header p{
   color: #555;
 }
 .card p {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: bold;
   color: #333;
 }
@@ -223,7 +223,7 @@ header p{
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   min-height: 400px;
-  width: 1000px;
+  width: 1030px;
 }
 .analytics-header {
   display: flex;
