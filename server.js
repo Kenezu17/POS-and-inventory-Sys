@@ -5,21 +5,38 @@ import mysql from "mysql2";
 import multer from "multer";
 import path from "path";
 import { constants } from "buffer";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import fs from "fs";
-
-
+import { Server } from "socket.io";  
+import http from "http";            
+import { time } from "console";
 
 const app = express();
-
 const port = 3000;
 
 
-app.use(cors());
+const server = http.createServer(app);
 
+
+const io = new Server(server, {
+  cors: { origin: "*", methods: ["GET", "POST"] } 
+});
+
+io.on("connection", (socket) => {
+  console.log("Socket Connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+app.use(express.json()); // ✅ this replaces bodyParser.json() 
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(express.static("public"));
 app.use("/uploads", express.static("uploads"));
+
 
 
 
@@ -34,7 +51,74 @@ db.connect(err =>{
   if(err) throw err;
   console.log("MySQL  Connected")
 })
+function logact(userid, type, message){
+  db.query("INSERT INTO activities (userid, type, message) VALUES (?, ?, ?)", [userid, type, message], (err, resutls)=>{
+   
+    if(err) return console.error("Activity Log error", err)
+   
+     io.emit("new activity", {
+      type,
+      message,
+      time: new Date()
+     }) 
+  })
+}
 
+function runQueryWithActivity(db, sql, params, userid, action, productName, callback) {
+  userid = userid || 1;
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.error("DB Error:", err);
+      if (callback) callback(err, null);
+      return;
+    }
+
+    let message = "";
+    switch (action) {
+      case "insert":
+        message = `Product "${productName}" was added`;
+        break;
+      case "update":
+        message = `Product "${productName}" was updated`;
+        break;
+      case "delete":
+        message = `Product "${productName}" was deleted`;
+        break;
+      default:
+        message = `Product "${productName}" changed`;
+    }
+
+    logact(userid, action, message);
+
+    if (callback) callback(null, results);
+  });
+}
+
+
+
+app.get("/activities", (req, res) => {
+  db.query("SELECT * FROM activities ORDER BY time DESC", (err, results) => {
+    if (err) {
+      console.error("DB error:", err);
+      return res.status(500).json({ message: "DB error" }); 
+    }
+    res.json(results); 
+  });
+});
+
+app.post("/activities", (req, res)=>{
+  const {userid, type, message}= req.body
+ if(!userid || !type || !message){
+  res.status(400).json({message: "Missing Fields"})
+  return
+ }
+ const sql = `INSERT INTO activities (userid, type, message) VALUES (?, ?, ?)`
+
+  db.query(sql, [userid, type, message], (err, results)=>{
+    if(err) return res.status(500).json({message: "DB error"})
+    res.json(results)
+  })
+})
 
 
 let clients = [];
@@ -77,7 +161,7 @@ app.get("/events", (req, res) => {
 });
 
 
-// Get all items
+
 app.get("/items", (req, res) => {
   db.query("SELECT * FROM items", (err, results) => {
     if (err) return res.status(500).json({ message: "DB error" });
@@ -85,7 +169,7 @@ app.get("/items", (req, res) => {
   });
 });
 
-// Add item
+
 app.post("/items", (req, res) => {
   const { barcode, item_name, categories, unit, quantity, price } = req.body;
 
@@ -100,14 +184,14 @@ app.post("/items", (req, res) => {
   });
 });
 
-// Delete item
+
 app.delete("/items/:id", (req, res) => {
   db.query("DELETE FROM items WHERE id = ?", [req.params.id], (err) => {
     if (err) return res.status(500).json({ message: "Delete Failed" });
     res.json({ message: "Item removed successfully " });
   });
 });
-// restock
+
 app.put("/items/:id/restock", (req, res) => {
   const { quantity } = req.body;
   const id = req.params.id;
@@ -146,15 +230,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+
 app.get("/products", (req, res) => {
   db.query("SELECT * FROM products", (err, results) => {
     if (err) {
-      console.error("DB error:", err);
-      return res.status(500).json({ message: "DB error" });
+      console.error("Error fetching products:", err);
+      return res.status(500).json({ message: "Error fetching products" });
     }
     res.json(results);
   });
 });
+
+
+app.get("/products/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("SELECT * FROM products WHERE id = ?", [id], (err, results) => {
+    if (err) return res.status(500).json({ message: " Products error" });
+    if (results.length === 0) return res.status(404).json({ message: "Not found" });
+    res.json(results[0]);
+  });
+});
+
 
 
 app.post("/products", upload.single("image"), (req, res) => {
@@ -165,54 +261,80 @@ app.post("/products", upload.single("image"), (req, res) => {
       message: "All fields are required and price must be a number",
     });
   }
-  console.log(req.file)
 
-  price = parseInt(price, 10);
-
-  const fileName = req.file.filename; 
+  price = parseFloat(price); 
+  const fileName = req.file.filename;
 
   const sql = "INSERT INTO products (product_name, price, image) VALUES (?, ?, ?)";
-
   db.query(sql, [product_name, price, fileName], (err, results) => {
     if (err) {
       console.error("DB insert error:", err);
       return res.status(500).json({ message: "DB insert error" });
     }
+
+  
+    io.emit("new_product", { 
+      id: results.insertId, 
+      product_name, 
+      price, 
+      image: fileName 
+    });
+
     res.json({
       message: "Product added successfully",
       productId: results.insertId,
-      imageFile: fileName, 
+      imageFile: fileName,
     });
   });
 });
 
 
-//update the products
-app.put("/products/:id", (req, res) => {
-  let { price } = req.body;
-  const { id } = req.params;
+app.put("/products/:id", async (req, res) => {
+  const productId = req.params.id;
+  const { price } = req.body;
 
-  if (!price || isNaN(price)) {
-    return res.status(400).json({ message: "Price must be a valid number" });
+ 
+  if (!price || isNaN(price) || price <= 0) {
+    return res.status(400).json({ message: "Invalid price value" });
   }
 
-  price = parseInt(price, 10);
+  try {
+    
+    const [rows] = await db.promise().query("SELECT * FROM products WHERE id = ?", [productId]);
 
-  const sql = "UPDATE products SET price = ? WHERE id = ?";
-  db.query(sql, [price, id], (err) => {
-    if (err) return res.status(500).json({ message: "DB update error" });
-    res.json({ message: "Price updated successfully" });
-  });
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    
+    await db.promise().query("UPDATE products SET price = ? WHERE id = ?", [price, productId]);
+
+    
+    return res.json({ message: "✅ Product updated successfully" });
+
+  } catch (err) {
+    console.error("Error updating product:", err);
+    return res.status(500).json({ message: "Server error while updating product" });
+  }
 });
 
-// Delete product
+
+
 app.delete("/products/:id", (req, res) => {
-  const { id } = req.params;
-  db.query("DELETE FROM products WHERE id = ?", [id], (err) => {
-    if (err) return res.status(500).json({ message: "DB delete error" });
-    res.json({ message: "Product deleted successfully" });
+  const { userid, product_name } = req.body;
+  const productId = req.params.id;
+
+  const sql = "DELETE FROM products WHERE id = ?";
+  const params = [productId];
+
+  db.query(sql, [params], (err, results)=>{
+    if(err) return res.status(500).json({message: "DB delete error"})
+     res.json({ message: "🗑️ Product deleted successfully" });
+  })
+  
   });
-});
+
+
 
 // ====================
 // TOTAL REPORT
@@ -524,7 +646,10 @@ const uploadProfile = multer({ storage: multer.diskStorage({
   destination: "uploads/profiles",
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 })});
-// employee
+
+// ==========================
+//  employee and owner
+// ==========================
 app.get("/employee", (req, res) => {
   db.query("SELECT * FROM employee_account", (err, results) => {
     if (err) {
@@ -547,12 +672,8 @@ app.get("/employee", (req, res) => {
   });
 });
 
-// ==========================
-// Create employee
-// ==========================
+
 app.post("/employee", upload.single("profilePic"), async (req, res) => {
-  console.log("req.body:", req.body);
-  console.log("req.file:", req.file);
   const { fname, lname, contact, address, username, password } = req.body;
 
   if (!username || !password) {
@@ -603,6 +724,61 @@ app.post("/employee", upload.single("profilePic"), async (req, res) => {
   }
 });
 
+app.get("/owner/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM owner WHERE id = ?";
+  db.query(sql, [id], (err, results) => {
+    if (err) return res.status(500).json({ message: "Database error" });
+    if (results.length === 0) return res.status(404).json({ message: "Owner not found" });
+    res.json(results[0]); 
+  });
+});
+
+
+app.post("/owner/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, store, address, email, contact, receipt_h, receipt_f } = req.body;
+
+  if (!name || !store || !address || !email || !contact || !receipt_h || !receipt_f) {
+    return res.status(400).json({ message: "All fields required" });
+  }
+
+  const sql = `
+    INSERT INTO owner (id, name, store, address, email, contact, receipt_h, receipt_f)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      name = VALUES(name),
+      store = VALUES(store),
+      address = VALUES(address),
+      email = VALUES(email),
+      contact = VALUES(contact),
+      receipt_h = VALUES(receipt_h),
+      receipt_f = VALUES(receipt_f)
+  `;
+
+  db.query(sql, [id, name, store, address, email, contact, receipt_h, receipt_f], (err, results) => {
+    if (err) {
+      console.error("Insert/Update Error:", err);
+      return res.status(500).json({ message: "Database insert/update error" });
+    }
+
+    res.json({ message: "Store info saved/updated successfully", results });
+  });
+});
+
+app.patch("/owner/:id", (req, res) => {
+  const { id } = req.params;
+  const { name, store, address, email, contact, receipt_h, receipt_f } = req.body;
+
+  const sql = `UPDATE owner SET name=?, store=?, address=?, email=?, contact=?, receipt_h=?, receipt_f=? WHERE id=?`;
+  db.query(sql, [name, store, address, email, contact, receipt_h, receipt_f, id], (err, results) => {
+    if (err) return res.status(500).json({ message: "Update error" });
+    res.json({ message: "Store info updated", results });
+  });
+});
+
+
+
 // ==========================
 // Delete employee + remove file
 // ==========================
@@ -646,6 +822,46 @@ app.patch("/employee/:id/password", async (req, res) => {
   }
 });
 
+app.patch("/changepass/:id", async (req, res) => {
+  const { id } = req.params;
+  const { password, new_password } = req.body;
+
+  if (!password || !new_password) {
+    return res.status(400).json({ message: "Both current and new passwords are required" });
+  }
+
+  try {
+    db.query("SELECT password FROM owner WHERE id = ?", [id], async (err, results) => {
+      if (err) return res.status(500).json({ message: "Database error" });
+
+      const storedHashedPassword = results[0].password;
+
+      
+      const isMatch = await bcrypt.compare(password, storedHashedPassword);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+
+    
+      const samePassword = await bcrypt.compare(new_password, storedHashedPassword);
+      if (samePassword) {
+        return res.status(400).json({ message: "New password cannot be the same as the old one" });
+      }
+
+      
+      const hpass = await bcrypt.hash(new_password, 10);
+
+      db.query("UPDATE owner SET password = ? WHERE id = ?", [hpass, id], (err2) => {
+        if (err2) return res.status(500).json({ message: "Failed to update password" });
+        res.json({ message: "Password updated successfully" });
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while updating password" });
+  }
+});
+
 
 
 //login
@@ -663,32 +879,38 @@ app.post("/login", async (req, res) => {
 // ==========================
 // OWNER
 // ==========================
-  db.query(ownerSql, [username], async (err, ownerResults) => {
+   db.query(ownerSql, [username], async (err, ownerResults) => {
     if (err) {
       console.error("Database error:", err);
       return res.status(500).json({ message: "Server Error" });
     }
 
     if (ownerResults.length > 0) {
-     
       const owner = ownerResults[0];
 
+      try {
+        // Compare plaintext password with hashed password in DB
+        const isMatch = await bcrypt.compare(password, owner.password);
 
-      if (password === owner.password) {
-        return res.status(200).json({
-          success: true,
-          message: "Owner login successful",
-          role: "owner",
-          userId: owner.id,
-        });
-      } else {
-        return res.status(401).json({ message: "Wrong password for owner" });
+        if (isMatch) {
+          return res.status(200).json({
+            success: true,
+            message: "Owner login successful",
+            role: "owner",
+            userId: owner.id,
+          });
+        } else {
+          return res.status(401).json({ message: "Wrong password for owner" });
+        }
+      } catch (bcryptErr) {
+        console.error("Bcrypt error:", bcryptErr);
+        return res.status(500).json({ message: "Server error during password check" });
       }
     }
 
 
 // ==========================
-// STAFF
+// Employee
 // ==========================
     db.query(staffSql, [username], async (err, staffResults) => {
       if (err) {
@@ -718,6 +940,11 @@ app.post("/login", async (req, res) => {
 });
 
 
+// ==========================
+// Settings
+// ==========================
+
+
 
 // sales chart
 app.get("/sales",(req, res)=>{
@@ -741,4 +968,6 @@ app.get("/sales",(req, res)=>{
 
 
 
-app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+server.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});

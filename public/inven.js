@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+  const userid = 1; 
+
   // ==============================
   // Sidebar Toggle
   // ==============================
@@ -12,39 +14,23 @@ document.addEventListener('DOMContentLoaded', function () {
   // ==============================
   // Search
   // ==============================
-
   const inventorySearch = document.querySelector('#inventory .search input');
-
-    inventorySearch?.addEventListener('input', () => {
+  inventorySearch?.addEventListener('input', () => {
     const query = inventorySearch.value.toLowerCase();
-
     document.querySelectorAll('.inventory-list .card').forEach(card => {
-     const name = card.querySelector('.item-title').textContent.toLowerCase();
+      const name = card.querySelector('.item-title').textContent.toLowerCase();
+      card.style.display = name.includes(query) ? 'flex' : 'none';
+    });
+  });
 
-     if (name.includes(query)) {
-       card.style.display = 'flex';
-     } else {
-       card.style.display = 'none';
-     }
-   });
-});
-
- const ProductSearch = document.querySelector('#products .sh input');
-
-    ProductSearch?.addEventListener('input', () => {
+  const ProductSearch = document.querySelector('#products .sh input');
+  ProductSearch?.addEventListener('input', () => {
     const query = ProductSearch.value.toLowerCase();
-
     document.querySelectorAll('.i-list .cd').forEach(card => {
-     const name = card.querySelector('.item-name').textContent.toLowerCase();
-
-     if (name.includes(query)) {
-       card.style.display = 'flex';
-     } else {
-       card.style.display = 'none';
-     }
-   });
-});
-
+      const name = card.querySelector('.item-name').textContent.toLowerCase();
+      card.style.display = name.includes(query) ? 'flex' : 'none';
+    });
+  });
 
   // ==============================
   // Section Switching
@@ -138,117 +124,127 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
       const res = await fetch('http://localhost:3000/items');
       const data = await res.json();
-
       inventory.length = 0;
       data.forEach(item => inventory.push(item));
-
       update();
-    } catch(err) {
+    } catch (err) {
       showmess("Failed to load items", 'error');
     }
   }
 
- function update() {
-  itemtotal.textContent = inventory.length;
-  lowtotal.textContent = inventory.filter(item => item.quantity <= 5).length;
+  function update() {
+    itemtotal.textContent = inventory.length;
+    lowtotal.textContent = inventory.filter(item => item.quantity <= 5).length;
+    const categories = [...new Set(inventory.map(item => item.categories))];
+    cattotal.textContent = categories.length;
+    container.innerHTML = "";
 
-  const categories = [...new Set(inventory.map(item => item.categories))];
-  cattotal.textContent = categories.length;
-
-  container.innerHTML = "";
-
-  categories.forEach(cat => {
-    inventory
-      .filter(item => item.categories === cat)
-      .forEach(item => {
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-header">
-            <div class="card-header-left">
-              <div class="icon-circle">
-                ${icon[item.categories] || '<i class="bi bi-question-circle"></i>'}
-              </div>
-              <div>
-                <h2 class="item-title">${item.item_name}</h2>
-                <p class="item-category">${item.categories}</p>
+    categories.forEach(cat => {
+      inventory
+        .filter(item => item.categories === cat)
+        .forEach(item => {
+          const card = document.createElement('article');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="icon-circle">
+                  ${icon[item.categories] || '<i class="bi bi-question-circle"></i>'}
+                </div>
+                <div>
+                  <h2 class="item-title">${item.item_name}</h2>
+                  <p class="item-category">${item.categories}</p>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="quantity" style="${item.quantity <= 5 ? 'color:red;' : ''}">
-            ${item.quantity} <span>${item.unit} available</span>
-          </div>
-          <div class="actions">
-            <button class="btn-restock" data-id="${item.id}">Restock</button>
-            <button class="btn-remove">Remove</button>
-          </div>
-        `;
+            <div class="quantity" style="${item.quantity < 5 ? 'color:red;' : ''}">
+              ${item.quantity} <span>${item.unit} available</span>
+            </div>
+            <div class="actions">
+              <button class="btn-restock" data-id="${item.id}">Restock</button>
+              <button class="btn-remove">Remove</button>
+            </div>
+          `;
+          container.appendChild(card);
 
-        container.appendChild(card);
+          // Remove Item
+          card.querySelector('.btn-remove').addEventListener('click', async () => {
+            try {
+              const res = await fetch(`http://localhost:3000/items/${item.id}`, { method: "DELETE" });
+              const data = await res.json();
+              showmess(data.message, res.ok ? 'successful' : 'error');
+              
+              await logActivity(userid, "deleted", `Deleted inventory item: ${item.item_name}`);
+              loadinven();
+            } catch (err) {
+              showmess('Delete Failed', "error");
+            }
+          });
 
-        // Remove Item
-        card.querySelector('.btn-remove').addEventListener('click', async () => {
-          try {
-            const res = await fetch(`http://localhost:3000/items/${item.id}`, { method: "DELETE" });
-            const data = await res.json();
-            showmess(data.message, res.ok ? 'successful' : 'error');
-            loadinven();
-          } catch(err) {
-            showmess('Delete Failed', "error");
-          }
+          // Restock Item
+          card.querySelector(".btn-restock").addEventListener("click", () => {
+            const id = card.querySelector(".btn-restock").getAttribute("data-id");
+            currentstock = inventory.find(i => i.id == id);
+            document.getElementById("edit-restock").value = "";
+            document.getElementById("restock-panel").style.display = "flex";
+          });
+          
+
+          if (item.quantity <= 5) {
+          logActivity(userid, "lowStock", `${item.item_name} is low stock (Qty: ${item.quantity})`);
+        }
         });
-
-        // Restock Item (fixed)
-        card.querySelector(".btn-restock").addEventListener("click", () => {
-          const id = card.querySelector(".btn-restock").getAttribute("data-id");
-          currentstock = inventory.find(i => i.id == id);
-          document.getElementById("edit-restock").value = "";
-          document.getElementById("restock-panel").style.display = "flex";
-        });
-      });
-  });
-}
-
-// Save Restock (fixed)
-document.querySelector('.Sve').addEventListener('click', async () => {
-  const qty = parseInt(document.querySelector('#edit-restock').value);
-  if (isNaN(qty) || qty < 1) {
-    showmess("Enter valid quantity", 'error');
-    return;
-  }
-
-  try {
-    const res = await fetch(`http://localhost:3000/items/${currentstock.id}/restock`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ quantity: qty })
     });
-
-    const data = await res.json();
-    showmess(`${data.message}. New Quantity: ${data.newQuantity}`, res.ok ? 'successful' : 'error');
-
-    document.getElementById("restock-panel").style.display = "none";
-    loadinven();
-  } catch (err) {
-    showmess("Restock Failed", "error");
   }
-});
+
+  // Save Restock
+  document.querySelector('.Sve').addEventListener('click', async () => {
+    const qty = parseInt(document.querySelector('#edit-restock').value);
+    if (isNaN(qty) || qty < 1) {
+      showmess("Enter valid quantity", 'error');
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3000/items/${currentstock.id}/restock`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: qty })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        showmess(data.message || "Restock Failed", "error");
+        return;
+      }
+
+      
+      const updatedQuantity = data.updatedQuantity ?? (currentstock.quantity + qty);
+      currentstock.quantity = updatedQuantity;
+
+      
+      await logActivity(userid, "restocked", `Restocked ${currentstock.item_name} with ${qty} units (New Qty: ${updatedQuantity})`);
+
+      showmess(`${data.message}. New Quantity: ${updatedQuantity}`, "successful");
+
+      document.getElementById("restock-panel").style.display = "none";
+      loadinven();
+
+    } catch (err) {
+      showmess("Restock Failed: " + err.message, "error");
+    }
+  });
 
 
-document.querySelector(".cancel").addEventListener("click", () => {
-  document.getElementById("restock-panel").style.display = "none";
-});
 
 
-loadinven();
+  document.querySelector(".cancel").addEventListener("click", () => {
+    document.getElementById("restock-panel").style.display = "none";
+  });
 
-
-  // ==============================
-  // Add Inventory Item Form
-  // ==============================
-  document.querySelector('.item-form').addEventListener('submit', async function(e){
+  // Add Inventory Item
+  document.querySelector('.item-form').addEventListener('submit', async function (e) {
     e.preventDefault();
-
     const items = {
       barcode: document.getElementById('barcode').value.trim(),
       item_name: document.getElementById('p-name').value.trim(),
@@ -256,9 +252,9 @@ loadinven();
       categories: document.getElementById('category').value.trim(),
       quantity: parseInt(document.getElementById('qty').value),
       unit: document.getElementById('unit').value.trim()
-    }
+    };
 
-    if ( !items.item_name || !items.categories ||!items.price ||isNaN(items.price || isNaN(items.quantity) || items.quantity < 1 || !items.unit)) {
+    if (!items.item_name || !items.categories || isNaN(items.price) || isNaN(items.quantity) || items.quantity < 1 || !items.unit) {
       showmess("Please complete all fields properly", "error");
       return;
     }
@@ -272,10 +268,12 @@ loadinven();
       const data = await res.json();
       showmess(data.message, res.ok ? 'successful' : 'error');
       loadinven();
-    } catch(err) {
+      await logActivity(userid, "itemAdded", `Added new inventory item: ${items.item_name}`);
+    } catch (err) {
       showmess("Server error", 'error');
     }
 
+    // Reset Form
     document.getElementById('barcode').value = "";
     document.getElementById('p-name').value = "";
     document.getElementById('qty').value = "";
@@ -285,36 +283,32 @@ loadinven();
     if (icondisplay) icondisplay.innerHTML = "";
   });
 
-// ==============================
-// Products Section
-// ==============================
-const productImageInput = document.getElementById("productImage");
+  // ==============================
+  // Products Section
+  // ==============================
+  const productImageInput = document.getElementById("productImage");
 const productList = document.querySelector(".i-list");
 let selectedImageData = null;
-let currentCard = null; 
+let currentCard = null;
 
 
+// ===== IMAGE PREVIEW =====
 productImageInput?.addEventListener("change", () => {
-    const file = productImageInput.files[0];
-    if (!file) {
-      selectedImageData = null;
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      selectedImageData = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
+  const file = productImageInput.files[0];
+  if (!file) { selectedImageData = null; return; }
+  const reader = new FileReader();
+  reader.onload = (e) => { selectedImageData = e.target.result; };
+  reader.readAsDataURL(file);
+});
+
+// ===== CREATE PRODUCT CARD =====
 function addProductCard(id, name, price, imageData) {
   const card = document.createElement("article");
   card.className = "cd";
   card.dataset.id = id;
   card.dataset.basePrice = price;
 
-  const imgTag = imageData
-    ? `<img src="${imageData}" alt="${name}" style="width:130px; height:150px;">`
-    : "";
+  const imgTag = imageData ? `<img src="${imageData}" alt="${name}" style="width:130px; height:150px;">` : "";
 
   card.innerHTML = `
     <div class="cdh">
@@ -337,11 +331,11 @@ function addProductCard(id, name, price, imageData) {
     </div>
   `;
 
-
   const priceSpan = card.querySelector(".amount");
   const sizelabel = card.querySelector(".size");
   const buttons = card.querySelectorAll(".btn-reorder");
 
+  // ===== SIZE PRICE CHANGE =====
   buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const size = btn.dataset.size;
@@ -351,15 +345,13 @@ function addProductCard(id, name, price, imageData) {
       if (size === "S") newPrice = basePrice * 0.6;
 
       priceSpan.textContent = "₱" + newPrice.toFixed(2);
-      sizelabel.textContent =
-        size === "L" ? "Large" : size === "M" ? "Medium" : "Small";
-
+      sizelabel.textContent = size === "L" ? "Large" : size === "M" ? "Medium" : "Small";
       buttons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
     });
   });
 
-
+  // ===== EDIT PRODUCT =====
   const editBtn = card.querySelector(".btn-edit");
   editBtn.addEventListener("click", () => {
     currentCard = card;
@@ -370,11 +362,11 @@ function addProductCard(id, name, price, imageData) {
   productList.appendChild(card);
 }
 
+// ===== LOAD PRODUCTS =====
 async function loadProducts() {
   try {
     const res = await fetch("http://localhost:3000/products");
     const products = await res.json();
-
     productList.innerHTML = "";
     products.forEach((p) => {
       const price = parseFloat(p.price);
@@ -385,10 +377,9 @@ async function loadProducts() {
     showmess("Error loading products: " + err.message, "error");
   }
 }
-
 loadProducts();
 
-
+// ===== ADD PRODUCT =====
 document.querySelector(".p-save").addEventListener("click", async (e) => {
   e.preventDefault();
   const name = document.getElementById("productname").value.trim();
@@ -408,6 +399,7 @@ document.querySelector(".p-save").addEventListener("click", async (e) => {
     formData.append("product_name", name);
     formData.append("price", price);
     formData.append("image", document.getElementById("productImage").files[0]);
+    formData.append("userid", userid); 
 
     const res = await fetch("http://localhost:3000/products", {
       method: "POST",
@@ -415,113 +407,122 @@ document.querySelector(".p-save").addEventListener("click", async (e) => {
     });
 
     const result = await res.json();
-    if (!res.ok) {
-      showmess(result.message, "error");
-      return;
-    }
+    if (!res.ok) { showmess(result.message, "error"); return; }
 
     showmess("Successfully added to database", "successful");
-
-
     const imageUrl = `http://localhost:3000/uploads/${result.imageFile}`;
     addProductCard(result.productId, name, price, imageUrl);
-
     document.getElementById("p-form").reset();
     selectedImageData = null;
+
+    await logActivity(userid, "productAdded", `Added new product: ${name}`);
   } catch (err) {
     showmess("Error saving product: " + err.message, "error");
   }
 });
 
-
-
-
+// ===== UPDATE PRODUCT =====
 document.getElementById("edit-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!currentCard) return;
-
+  
   const newPrice = parseFloat(document.getElementById("edit-price").value);
-  if (isNaN(newPrice) || newPrice <= 0) {
-    showmess("Invalid price", "error");
-    return;
-  }
+  if (isNaN(newPrice) || newPrice <= 0) { showmess("Invalid price", "error"); return; }
 
   try {
     const productId = currentCard.dataset.id;
     const res = await fetch(`http://localhost:3000/products/${productId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ price: newPrice }),
+      body: JSON.stringify({ price: newPrice, userid }), 
     });
-
     const result = await res.json();
-    if (!res.ok) {
-      showmess(result.message, "error");
-      return;
-    }
+    if (!res.ok) { showmess(result.message, "error"); return; }
 
     currentCard.dataset.basePrice = newPrice;
-    currentCard.querySelector(".amount").textContent =
-      "₱" + newPrice.toFixed(2);
-
+    currentCard.querySelector(".amount").textContent = "₱" + newPrice.toFixed(2);
     showmess("Price updated successfully", "successful");
     document.getElementById("edit-panel").style.display = "none";
+
+    await logActivity(userid, "productUpdated", `Updated product price: ${currentCard.querySelector(".item-name").textContent} -> ₱${newPrice}`);
   } catch (err) {
     showmess("Error updating product: " + err.message, "error");
   }
 });
 
-
+// ===== CANCEL EDIT =====
 document.querySelector(".btn-cancel").addEventListener("click", () => {
   document.getElementById("edit-panel").style.display = "none";
   currentCard = null;
 });
 
-
+// ===== DELETE PRODUCT =====
 document.querySelector(".btn-delete").addEventListener("click", async () => {
   if (!currentCard) return;
   const productId = currentCard.dataset.id;
-
   if (!confirm("Are you sure you want to delete this product?")) return;
 
   try {
     const res = await fetch(`http://localhost:3000/products/${productId}`, {
       method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userid }), // ✅ send userid
     });
-
     const result = await res.json();
-    if (!res.ok) {
-      showmess(result.message, "error");
-      return;
-    }
+    if (!res.ok) { showmess(result.message, "error"); return; }
 
+    const productName = currentCard.querySelector(".item-name").textContent;
     productList.removeChild(currentCard);
     showmess("Product deleted successfully", "successful");
     document.getElementById("edit-panel").style.display = "none";
+    await logActivity(userid, "productDeleted", `Deleted product: ${productName}`);
     currentCard = null;
   } catch (err) {
     showmess("Error deleting product: " + err.message, "error");
   }
 });
 
+// ===== ACTIVITY LOGGER =====
+async function logActivity(userid, type, message) {
+  try {
+    await fetch("http://localhost:3000/activity-log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userid, type, message }),
+    });
+  } catch (err) {
+    console.error("Failed to log activity:", err);
+  }
+}
+
 
   // ==============================
   // Toast Message
   // ==============================
-  function showmess(message, type = "info"){
+  function showmess(message, type = "info") {
     const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.style.background =
-      type === 'successful' ? "#28a745":
-      type === 'error'? "#dc3545" :
-      "#333";
+      type === 'successful' ? "#28a745" :
+        type === 'error' ? "#dc3545" :
+          "#333";
     toast.className = "show";
+    setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+  }
 
-    setTimeout(() => {
-      toast.className = toast.className.replace("show", "");
-    }, 3000);
+  // ==============================
+  // Activity Logger
+  // ==============================
+  async function logActivity(userid, type, message) {
+    try {
+      await fetch("http://localhost:3000/activities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userid, type, message })
+      });
+    } catch (err) {
+      console.error("Activity log failed", err);
+    }
   }
 
   loadinven();
-
 });

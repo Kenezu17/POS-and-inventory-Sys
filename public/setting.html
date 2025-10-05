@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="setting.css">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
-    <title>Document</title>
+    <title>Settings</title>
 </head>
 <body>
     <aside class="sidebar" id ="sidebar">
@@ -21,76 +21,80 @@
         <li><a href="employee.html"><i class='bx bxs-user'></i><span> Employee</span></a></li>
         <li><a href="barcode.html"><i class='bx bxs-barcode'></i><span> Barcode</span></a></li>
         <li><a href="setting.html"><i class='bx bxs-cog'></i><span> Settings</span></a></li>
-        <div class="admin">
-      <img src="/image/letter-a.png" alt="admin" class="user-pic" width="30px" height="30px">
-      <span class="admin-name">Admin</span>
-      <p id="pr" href="#">admin@brewPos.com <i class="bx bxs-chevron-down"></i></p>
-     </div>
+        
       </ul>
     </aside>
-    <section class="main">
-    
+
+    <form class="main">
+     <div id="toast"></div>
     <div class="settings-container">
       <header class="settings-header">
        <h1>Settings</h1>
        <p>Manage your coffee shop preferences and configuration</p>
-       <button class="save-btn">Save Changes</button>
+       <button type="submit" class="save-btn">Save Changes</button>
     </header>
 
     <main class="settings-grid">
       <!-- Store Information -->
       <section class="card">
         <h2>☕ Store Information</h2>
+        <label>Name
+          <input id="fullname" type="text" >
+        </label>
         <label>Store Name
-          <input type="text" value="BravPos Coffee">
+          <input id="name" type="text" >
         </label>
         <label>Address
-          <input type="text" value="123 Coffee Street, Bean City">
+          <input id="address" type="text" >
         </label>
         <div class="inline-fields">
           <label>Phone
-            <input type="text" value="+1 234 567 8900">
+            <input id="contact" type="text">
           </label>
           <label>Email
-            <input type="email" value="hello@bravpos.com">
+            <input id="email" type="email" >
           </label>
         </div>
       </section>
 
       <!-- Notifications -->
-      <section class="card">
-        <h2>🔔 Notifications</h2>
-        <div class="toggle">
-          <span>Low Stock Alerts</span>
-          <label class="switch">
-           <input type="checkbox" checked>
-           <span class="slider"></span>
-        </label>
-        </div>
-        <div class="toggle">
-          <span>Daily Reports</span>
-           <label class="switch">
-           <input type="checkbox" checked>
-           <span class="slider"></span>
-        </label>
-        </div>
-        <div class="toggle">
-          <span>New Order Alerts</span>
-          <label class="switch">
-           <input type="checkbox" checked>
-           <span class="slider"></span>
-        </label>
-        </div>
-      </section>
+     <section class="card">
+  <h2>🔔 Notifications</h2>
+
+  <div class="toggle">
+    <span>Low Stock Alerts</span>
+    <label class="switch">
+      <input type="checkbox" id="lowStockSwitch" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="toggle">
+    <span>Product Updated</span>
+    <label class="switch">
+      <input type="checkbox" id="productUpdatedSwitch" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="toggle">
+    <span>Item Updated</span>
+    <label class="switch">
+      <input type="checkbox" id="itemUpdatedSwitch" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+</section>
+
 
       <!-- Receipt Configuration -->
       <section class="card">
         <h2>🧾 Receipt Configuration</h2>
         <label>Receipt Header
-          <input type="text" value="Thank you for visiting BravPos!">
+          <input id="h" type="text" >
         </label>
         <label>Receipt Footer
-          <input type="text" value="Have a great day!">
+          <input id="f" type="text">
         </label>
         <div class="toggle">
           <span>Print Logo</span>
@@ -104,27 +108,18 @@
       <!-- Security -->
       <section class="card">
         <h2>🔒 Security</h2>
-        <div class="toggle">
-          <span>Two-Factor Authentication</span>
-          <label class="switch">
-           <input type="checkbox" checked>
-           <span class="slider"></span>
-        </label>
+        <div id="changepass" class="toggle">
+          <span class="label">Current password</span>
+          <input class="password" type="password" placeholder="Current Password"> 
+          <span class="label">New password</span>
+          <input class="new_password" type="password" placeholder="New Password">
         </div>
-        <div class="toggle">
-          <span>Auto Logout</span>
-          <input type="text" placeholder="Set duration">
-           <label class="switch">
-          
-  </label>
-        </div>
-        <button class="btn">Change Password</button>
-      </section>
-
-     
+        <button  type="submit" class="btn">Change Password</button>
+      </section>     
     </main>
   </div>
-</section>
+</form>
 </body>
 <script src="setting.js"></script>
+<script src="http://localhost:3000/socket.io/socket.io.js"></script>
 </html>

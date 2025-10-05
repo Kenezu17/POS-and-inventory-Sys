@@ -151,4 +151,137 @@ fetch('http://localhost:3000/records')
   document.getElementById('todayorders').textContent  = 
    `${parseFloat(data.total_quantity || 0).toLocaleString()}`
 })
+
+
+//========================
+//Logout session
+//========================
+ const profileToggle = document.getElementById('profile-toggle');
+  const profileDropdown = document.getElementById('profile-dropdown');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  profileToggle.addEventListener('click', () => {
+    profileDropdown.classList.toggle('show');
+  });
+
+ 
+  document.addEventListener('click', (e) => {
+    if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+      profileDropdown.classList.remove('show');
+    }
+  });
+
+
+  logoutBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "login.html"; 
+  });
+ function getTypeClass(activity) {
+  const msg = activity.message.toLowerCase();
+   const type = (activity.type || "").toLowerCase();
+  
+  if (type === "lowstock") return "lowStock";
+  if (type === "productadded") return "added";
+  if (type === "productdeleted") return "deleted";
+  if (type === "productrestocked") return "restocked";
+  if (type === "productupdated") return "productUpdated";
+
+
+  if (msg.includes("low stock")) return "lowStock";
+  if (msg.includes("added")) return "added";
+  if (msg.includes("deleted")) return "deleted";
+  if (msg.includes("restocked")) return "restocked";
+  if (msg.includes("updated")) return "productUpdated";
+
+  return "default";
+}
+  
+//========================
+// logs notification
+//========================
+  const socket = io();
+
+function timeAgo(date) {
+  const now = new Date();
+  const diff = Math.floor((now - new Date(date)) / 60000);
+  if (diff < 1) return "just now";
+  if (diff === 1) return "1 min ago";
+  if (diff < 60) return diff + " mins ago";
+  const hrs = Math.floor(diff / 60);
+  if (hrs < 24) return hrs + " hrs ago";
+  return new Date(date).toLocaleString();
+}
+
+function getTypeClass(activity) {
+  const msg = (activity.message || "").toLowerCase();
+  const type = (activity.type || "").toLowerCase();
+
+  if (type === "lowstock" || msg.includes("low stock")) return "lowStock";
+  if (type === "productupdated" || msg.includes("product updated")) return "Updated";
+  if (type === "productupdated" || msg.includes("added")) return "added";
+  if (type === "productupdated" || msg.includes("deleted")) return "deleted";
+  
+  if (type === "itemupdated" || msg.includes("item updated")) return "Updated";
+  if (type === "itemupdated" || msg.includes("added")) return "added";
+  if (type === "itemupdated" || msg.includes("deleted")) return "deleted";
+  if (type === "itemupdated" || msg.includes("restocked")) return "restocked";
+  
+  return "default";
+}
+
+function renderActivity(a) {
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <span class="activity-icon ${getTypeClass(a)}"></span>
+    <span class="message">${a.message}</span>
+    <span class="time">${timeAgo(a.time)}</span>
+  `;
+  return li;
+}
+
+// ✅ Filtering logic
+function shouldShowActivity(activity) {
+  const settings = JSON.parse(localStorage.getItem("notificationSettings") || "{}");
+  const msg = (activity.message || "").toLowerCase();
+  const type = (activity.type || "").toLowerCase();
+
+  // 🔒 Check each notification type
+  if (!settings.lowStock && (msg.includes("low stock") || type === "lowstock")) return false;
+  if (!settings.productUpdated && (msg.includes("product updated") || type === "productupdated")) return false;
+  if (!settings.productUpdated && (msg.includes("deleted") || type === "productupdated")) return false;
+  if (!settings.productUpdated && (msg.includes("added") || type === "productupdated")) return false;
+
+  if (!settings.itemUpdated && (msg.includes("deleted ") || type === "itemupdated")) return false;
+  if (!settings.itemUpdated && (msg.includes("restocked ") || type === "itemupdated")) return false;
+  if (!settings.itemUpdated && (msg.includes("added ") || type === "itemupdated")) return false;
+
+  return true;
+}
+
+async function loadActivities() {
+  const res = await fetch("http://localhost:3000/activities");
+  const activities = await res.json();
+  const list = document.getElementById("activityList");
+  list.innerHTML = "";
+
+  activities.forEach(a => {
+    if (shouldShowActivity(a)) {
+      list.appendChild(renderActivity(a));
+    }
+  });
+}
+
+// Realtime listener
+socket.on("new-activity", (activity) => {
+  if (!shouldShowActivity(activity)) return;
+  const list = document.getElementById("activityList");
+  list.prepend(renderActivity(activity));
+});
+
+// Initial load
+loadActivities();
+
 });
