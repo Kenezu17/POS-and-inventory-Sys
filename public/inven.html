@@ -59,11 +59,11 @@
    <label for="category">Category:</label>
      <select id="category" name="inventory" required>
      <option value=""></option>
-     <option value="coffee & beverages">Coffee & Beverages</option>
+     <option value="coffee & beverages"> Beverages</option>
      <option value="food & ingredients">Food Ingredients</option>
      <option value="consumables & supplies">Consumables & Supplies</option>
      <option value="equipment & tools">Equipment & Tools</option>
-     <option value="cleaning & maintenance">Cleaning & Maintenance</option>
+     <option value="cleaning & maintenance">Cleaning </option>
     </select>
 
 
@@ -112,7 +112,7 @@
      </div> 
       <div class="btn">    
       <button class="products-btn" data-target="products">Products</button>
-       <button class="additem" type="button"  >Add Item</button>
+       <button class="additem" type="button" >+ Add Item</button>
        </div>
     </header>        
     <div class="search">
@@ -140,7 +140,15 @@
  </div>
   </section>
   
- 
+ <div id="confirmModal" class="modals">
+  <div class="modal-content">
+    <p id="confirmMessage">Are you sure?</p>
+    <div class="modal-buttons">
+      <button id="confirmYes" class="yes-btn">Yes</button>
+      <button id="confirmNo" class="no-btn">No</button>
+    </div>
+  </div>
+</div>
      
   
  <section class="pro" id="products">
@@ -153,7 +161,7 @@
  
        <div class="p-btn">    
        <button class="inv-btn" data-target="inventory">Inventory</button>
-       <button class="add-BTN" type="button" aria-label="Add Item">Add Product</button>
+       <button class="add-BTN" type="button" aria-label="Add Item">+Add Product</button>
        </div>
     </header>
     <form id="p-form">
@@ -161,6 +169,12 @@
        <h2 id="panelname">Products</h2>
        <input type="text" id="productname" name="productname" placeholder="Product Name" >
        <input type="number" id="price" name="price" placeholder="Price" >
+        <select  class="category" id="Category" placeholder ="Categories" required>
+          <option value=""></option>
+          <option value="milktea">Milk Tea</option>
+          <option value="coffee">Coffee</option>
+          <option value="snacks">Snacks</option>
+        </select>
        <input type="file" id="productImage" name="productImage" accept="image/*" > 
        <img id="imagepre" accept="image/*">
        <div class ="sidebtn">

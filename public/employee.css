@@ -19,7 +19,7 @@ html, body {
 body {
   display: flex;
   font-family: Arial, sans-serif;
-  background-color: #f7f7f7;
+  background-color:hsl(40 30% 97%);
   height: 100vh;
   overflow-y: auto;
 }  
@@ -37,7 +37,7 @@ body::-webkit-scrollbar{
 .sidebar {
   width: 220px;
   height: 100vh;
-  background: #d3d1d1c5;
+  background: hsl(30 15% 88%);
   border-right: 1px solid #e0e0e0;
   padding: 20px 0;
   position: fixed;
@@ -45,10 +45,8 @@ body::-webkit-scrollbar{
   top: 0;
   transition: width 0.3s ease;
   flex-shrink: 0;
-  
-    
+      
 }
-
 
 .sidebar ul li {
   margin: 20px 0; 
@@ -62,9 +60,10 @@ body::-webkit-scrollbar{
   justify-content: space-between;  
   font-size: 22px;
   font-weight: bold;
-  color: #000000;
+  margin-bottom: 30px;
+  color:hsl(25 35% 20%);
   font-family: 'Pacifico', cursive;
-  border-bottom: 1px solid #000000f3;
+  border-bottom: 1px solid #fffffff3;
   padding: 0 15px;
    
 }
@@ -97,8 +96,8 @@ body::-webkit-scrollbar{
 .nav a {
   display: flex;
   text-decoration: none;
-  color: #222;   
-  font-size: 18px;
+  color:hsl(25 35% 20%);   
+  font-size: 16px;
   padding: 10px 20px;
   border-radius: 10px;
   margin: 0 10px;
@@ -106,18 +105,15 @@ body::-webkit-scrollbar{
   
 }
 
-.nav a:hover {
-  background: #f5b8b8e0 ;  
-  color: #000;
-}
-
 .nav a.active {
-  background: #f5b8b8e0;
-  color: #000;
-  font-size: \\;
+background:hsl(350 65% 85%);
+color: #000; 
 }
 
-
+.nav a:hover {
+  background:hsl(350 65% 85%) ;  
+  color: #000;
+}
 
 .nav a i {
   margin-right: 10px;
@@ -179,21 +175,21 @@ header h1{
   color: #333;
 }
 .addemploye{
-  margin-top: -44px;
+  margin-top: -60px;
   width: 160px;
   height: 40px;
-  background-color: #f5b8b8e0;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
   border: none;   
   border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgb(255, 0, 0);
   cursor: pointer;
   margin-left: 830px;
   font-size: 18px;
 }
 .search {
       display: flex;
-      margin-bottom: 2rem;
-      margin-top: 40px;
+      margin-bottom: 1rem;
       width: 100%;
       max-width: 400px;
       height: 40px;
@@ -378,13 +374,13 @@ header h1{
   color: #777;
 }
 
-h2 {
+.modal h2 {
   margin-top: 0;
   font-size: 18px;
   color: #333;
 }
 
-p {
+.modal p {
   font-size: 14px;
   color: #555;
   margin-bottom: 20px;
@@ -569,12 +565,7 @@ transition: margin-left 0.3s ease;
 .sidebar.collapsed .nav a span {
   display: none;
 }
-.sidebar.collapsed .main{
-  margin-left: 70px;
-  margin-top: -510px;
-  transition: margin-left 0.3s ease;
-  width: 1300px;
-}
+
 .sidebar.collapsed .nav a {
   justify-content: center;
 }

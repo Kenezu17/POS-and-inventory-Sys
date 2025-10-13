@@ -11,6 +11,28 @@ document.addEventListener('DOMContentLoaded', function () {
     sidebar.classList.toggle("collapsed");
   });
 
+   function showConfirm(message, callback) {
+  const modal = document.getElementById("confirmModal");
+  const msg = document.getElementById("confirmMessage");
+  const yesBtn = document.getElementById("confirmYes");
+  const noBtn = document.getElementById("confirmNo");
+
+  msg.textContent = message;
+  modal.style.display = "flex";
+
+ 
+  yesBtn.onclick = () => {
+    modal.style.display = "none";
+    callback(true);
+  };
+
+  noBtn.onclick = () => {
+    modal.style.display = "none";
+    callback(false);
+  };
+}
+
+
   // ==============================
   // Search
   // ==============================
@@ -168,29 +190,35 @@ document.addEventListener('DOMContentLoaded', function () {
           container.appendChild(card);
 
           // Remove Item
-          card.querySelector('.btn-remove').addEventListener('click', async () => {
-            try {
-              const res = await fetch(`http://localhost:3000/items/${item.id}`, { method: "DELETE" });
-              const data = await res.json();
-              showmess(data.message, res.ok ? 'successful' : 'error');
-              
-              await logActivity(userid, "deleted", `Deleted inventory item: ${item.item_name}`);
-              loadinven();
-            } catch (err) {
-              showmess('Delete Failed', "error");
-            }
-          });
+    card.querySelector('.btn-remove').addEventListener('click', async () => {
+      showConfirm("Are you sure?", async (confirm) => {
+     if (confirm) {
+      try {
+        const res = await fetch(`http://localhost:3000/items/${item.id}`, {
+          method: "DELETE"
+        });
 
-          // Restock Item
-          card.querySelector(".btn-restock").addEventListener("click", () => {
-            const id = card.querySelector(".btn-restock").getAttribute("data-id");
-            currentstock = inventory.find(i => i.id == id);
-            document.getElementById("edit-restock").value = "";
-            document.getElementById("restock-panel").style.display = "flex";
-          });
-          
+        const data = await res.json();
+        showmess(data.message, res.ok ? 'successful' : 'error');
 
-          if (item.quantity <= 5) {
+        await logActivity(userid, "deleted", `Deleted inventory item: ${item.item_name}`);
+        loadinven();
+
+      } catch (err) {
+        showmess('Delete Failed', "error");
+        console.error(err);
+      }
+    }
+  });
+});
+      // Restock Item
+    card.querySelector(".btn-restock").addEventListener("click", () => {
+      const id = card.querySelector(".btn-restock").getAttribute("data-id");
+      currentstock = inventory.find(i => i.id == id);
+      document.getElementById("edit-restock").value = "";
+      document.getElementById("restock-panel").style.display = "flex";
+       });
+     if (item.quantity <= 5) {
           logActivity(userid, "lowStock", `${item.item_name} is low stock (Qty: ${item.quantity})`);
         }
         });
@@ -234,8 +262,6 @@ document.addEventListener('DOMContentLoaded', function () {
       showmess("Restock Failed: " + err.message, "error");
     }
   });
-
-
 
 
   document.querySelector(".cancel").addEventListener("click", () => {
@@ -384,8 +410,9 @@ document.querySelector(".p-save").addEventListener("click", async (e) => {
   e.preventDefault();
   const name = document.getElementById("productname").value.trim();
   const price = parseFloat(document.getElementById("price").value.trim());
+  const category = document.querySelector(".category").value.trim()
 
-  if (!name || isNaN(price) || price <= 0) {
+  if (!name || isNaN(price) || price <= 0 || !category) {
     showmess("Please complete all fields with valid values.", "error");
     return;
   }
@@ -400,6 +427,7 @@ document.querySelector(".p-save").addEventListener("click", async (e) => {
     formData.append("price", price);
     formData.append("image", document.getElementById("productImage").files[0]);
     formData.append("userid", userid); 
+    formData.append("category", category)
 
     const res = await fetch("http://localhost:3000/products", {
       method: "POST",
@@ -411,7 +439,7 @@ document.querySelector(".p-save").addEventListener("click", async (e) => {
 
     showmess("Successfully added to database", "successful");
     const imageUrl = `http://localhost:3000/uploads/${result.imageFile}`;
-    addProductCard(result.productId, name, price, imageUrl);
+    addProductCard(result.productId, name, price, imageUrl, category);
     document.getElementById("p-form").reset();
     selectedImageData = null;
 
@@ -465,7 +493,7 @@ document.querySelector(".btn-delete").addEventListener("click", async () => {
     const res = await fetch(`http://localhost:3000/products/${productId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userid }), // ✅ send userid
+      body: JSON.stringify({ userid }),
     });
     const result = await res.json();
     if (!res.ok) { showmess(result.message, "error"); return; }

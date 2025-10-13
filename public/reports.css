@@ -27,7 +27,7 @@ html, body {
 body {
  display: flex;
   font-family: Arial, sans-serif;
-  background: #f7f7f7;
+  background: hsl(40 30% 97%);
   color: #333;
   overflow-y: auto;
   height: 100vh;  
@@ -43,7 +43,7 @@ body::-webkit-scrollbar {
 .sidebar {
   width: 220px;
   height: 100vh;
-  background: #d3d1d1;
+  background: hsl(30 15% 88%);
   border-right: 1px solid #e0e0e0;
   padding: 20px 0;
   position: fixed;
@@ -67,9 +67,9 @@ body::-webkit-scrollbar {
   font-size: 22px;
   font-weight: bold;
   margin-bottom: 30px;
-  color: #000000;
+  color:hsl(25 35% 20%);
   font-family: 'Pacifico', cursive;
-  border-bottom: 1px solid #000000f3;
+  border-bottom: 1px solid #fffffff3;
   padding: 0 15px;
    
 }
@@ -89,6 +89,7 @@ body::-webkit-scrollbar {
 
 .logo i {
   align-self: center,right;
+  
   margin-right: 20px;
   
 }
@@ -101,8 +102,8 @@ body::-webkit-scrollbar {
 .nav a {
   display: flex;
   text-decoration: none;
-  color: #222;   
-  font-size: 18px;
+  color:hsl(25 35% 20%);   
+  font-size: 16px;
   padding: 10px 20px;
   border-radius: 10px;
   margin: 0 10px;
@@ -111,12 +112,12 @@ body::-webkit-scrollbar {
 }
 
 .nav a.active {
-background: #f5b8b8e0;
+background:hsl(350 65% 85%);
 color: #000; 
 }
 
 .nav a:hover {
-  background: #f5b8b8e0 ;  
+  background:hsl(350 65% 85%) ;  
   color: #000;
 }
 
@@ -226,8 +227,9 @@ p {
 .print{
    font-size: 16px;
    height: 40px;
-   background-color: #9db4e6;
+   background-color: #684f1b;
    width: 120px;
+   color: white;
    border-radius: 5px;
    cursor:pointer;
    border: none;;
@@ -238,7 +240,7 @@ p {
   width: 100px;
   height: 40px;
   border-radius: 5px;
-  background-color: #F3DAA5;
+  background-color: #ffffff;
   cursor: pointer;
   border: none;
 }
@@ -249,17 +251,11 @@ p {
   width: 100px;
   height: 40px;
   border-radius: 5px;
-  background-color: #F3DAA5;
+  background-color: #ffffff;
   cursor: pointer;
   border: none;
 }
- .btn-year:hover {
-      background-color: #F5B8B8;
-    }
-
-.btn-month:hover {
-      background-color: #F5B8B8;
-    }
+ 
     
 .monthly{
   margin-top: 20px;

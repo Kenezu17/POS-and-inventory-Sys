@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const password = document.getElementById("password").value.trim();
 
     if (!username || !password) {
-      alert("Please fill out both Username and Password.");
+      showmess("Please fill out both Username and Password.","error");
       return;
     }
 
@@ -18,19 +18,37 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       const data = await res.json();
+     
+     
 
       if (res.ok && data.success) {
-        alert(data.message);
+         console.log("Storing username:", data.username);
+       localStorage.setItem("userUsername", data.username);
         if (data.role === "owner") window.location.href = "admin.dash.html";
         else if (data.role === "staff") window.location.href = "pos.html";
-      } else {
-        alert(data.message);
+     } else {
+        showmess(data.message, "error");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Could not connect to server");
+      showmess("Could not connect to server","error");
     }
   }
 
   document.querySelector(".logbtn").addEventListener("click", login);
+
+ // ==============================
+  // Toast Message
+  // ==============================
+  function showmess(message, type = "info") {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.background =
+      type === 'successful' ? "#28a745" :
+        type === 'error' ? "#dc3545" :
+          "#333";
+    toast.className = "show";
+    setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+  }
+
 });

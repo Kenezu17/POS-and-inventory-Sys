@@ -11,6 +11,9 @@ import { Server } from "socket.io";
 import http from "http";            
 import { time } from "console";
 
+
+
+
 const app = express();
 const port = 3000;
 
@@ -30,7 +33,7 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(express.json()); // ✅ this replaces bodyParser.json() 
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -51,6 +54,9 @@ db.connect(err =>{
   if(err) throw err;
   console.log("MySQL  Connected")
 })
+
+
+
 function logact(userid, type, message){
   db.query("INSERT INTO activities (userid, type, message) VALUES (?, ?, ?)", [userid, type, message], (err, resutls)=>{
    
@@ -176,9 +182,11 @@ app.post("/items", (req, res) => {
   if (!barcode || !item_name || !categories || !unit || !quantity ||!price || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
     return res.status(400).json({ message: "All fields required" });
   }
+  
+  const total_cost = quantity*price
 
-  const sql = "INSERT INTO items (barcode, item_name, categories, unit, quantity, price) VALUES (?, ?, ?, ?, ?, ?)";
-  db.query(sql, [barcode, item_name, categories, unit, quantity, price], (err, result) => {
+  const sql = "INSERT INTO items (barcode, item_name, categories, unit, quantity, price, total_cost) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  db.query(sql, [barcode, item_name, categories, unit, quantity, price, total_cost], (err, result) => {
     if (err) return res.status(500).json({ message: "Insert Failed" });
     res.json({ message: "Item added successfully "});
   });
@@ -200,21 +208,31 @@ app.put("/items/:id/restock", (req, res) => {
     return res.status(400).json({ message: "Quantity must be greater than 0" });
   }
 
+
   db.query("UPDATE items SET quantity = quantity + ? WHERE id = ?", [quantity, id], (err) => {
     if (err) return res.status(500).json({ message: "Restock Failed" });
 
-    
-    db.query("SELECT quantity FROM items WHERE id = ?", [id], (err, results) => {
-      if (err) return res.status(500).json({ message: "Restock Failed" });
+    const updateTotalQuery = `
+      UPDATE items 
+      SET total_cost = quantity * price 
+      WHERE id = ?;
+    `;
 
-      res.json({
-        message: "Restock successful",
-        newQuantity: results[0].quantity
+    db.query(updateTotalQuery, [id], (err2) => {
+      if (err2) return res.status(500).json({ message: "Failed to update total cost" });
+
+      db.query("SELECT quantity, total_cost FROM items WHERE id = ?", [id], (err3, results) => {
+        if (err3) return res.status(500).json({ message: "Failed to retrieve updated data" });
+
+        res.json({
+          message: "Restock successful",
+          newQuantity: results[0].quantity,
+          totalCost: results[0].total_cost
+        });
       });
     });
   });
 });
-
 
 // setup storage
 const storage = multer.diskStorage({
@@ -254,9 +272,9 @@ app.get("/products/:id", (req, res) => {
 
 
 app.post("/products", upload.single("image"), (req, res) => {
-  let { product_name, price } = req.body;
+  let { product_name, price, category } = req.body;
 
-  if (!product_name || !price || isNaN(price) || !req.file) {
+  if (!product_name || !price || isNaN(price) || !category || !req.file) {
     return res.status(400).json({
       message: "All fields are required and price must be a number",
     });
@@ -265,8 +283,8 @@ app.post("/products", upload.single("image"), (req, res) => {
   price = parseFloat(price); 
   const fileName = req.file.filename;
 
-  const sql = "INSERT INTO products (product_name, price, image) VALUES (?, ?, ?)";
-  db.query(sql, [product_name, price, fileName], (err, results) => {
+  const sql = "INSERT INTO products (product_name, price, image, category) VALUES (?, ?, ?, ?)";
+  db.query(sql, [product_name, price, fileName, category], (err, results) => {
     if (err) {
       console.error("DB insert error:", err);
       return res.status(500).json({ message: "DB insert error" });
@@ -277,7 +295,8 @@ app.post("/products", upload.single("image"), (req, res) => {
       id: results.insertId, 
       product_name, 
       price, 
-      image: fileName 
+      image: fileName ,
+      category
     });
 
     res.json({
@@ -333,6 +352,68 @@ app.delete("/products/:id", (req, res) => {
   })
   
   });
+
+
+app.post("/checkout", (req, res) => {
+  const { payment_type, items, total } = req.body;
+
+  if (!payment_type || !items || items.length === 0 || !total) {
+    return res.status(400).json({ message: "Missing transaction data" });
+  }
+
+  const now = new Date();
+  const sales_date = now.toISOString().split("T")[0];
+  const month_num = now.getMonth() + 1;
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const month = monthNames[month_num - 1];
+
+  const insertPromises = items.map(item => {
+    const totalPrice = parseFloat(item.price) * parseInt(item.quantity);
+    const revenue = totalPrice;
+    const profit = totalPrice * 0.1; 
+
+    if (!item.product_name || isNaN(totalPrice)) {
+      console.warn("⚠️ Skipping invalid item:", item);
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      const sql = `
+        INSERT INTO sales 
+        (product_name, quantity, total, sales_date, month_num, month, revenue, profit, payment_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      const values = [
+        item.product_name,
+        item.quantity,
+        totalPrice,
+        sales_date,
+        month_num,
+        month,
+        revenue,
+        profit,
+        payment_type
+      ];
+
+      db.query(sql, values, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+  });
+
+  Promise.all(insertPromises)
+    .then(() => {
+      res.json({ message: " Transaction saved successfully!" });
+    })
+    .catch(err => {
+      console.error(" Error saving sales:", err);
+      res.status(500).json({ message: "Error saving sales data" });
+    });
+});
 
 
 
@@ -661,6 +742,7 @@ app.get("/employee", (req, res) => {
       id: emp.id,
       fname: emp.fname,
       lname: emp.lname,
+      username: emp.username,
       address: emp.address,
       contact: emp.contact,
       profileImage: emp.profileImage
@@ -726,7 +808,7 @@ app.post("/employee", upload.single("profilePic"), async (req, res) => {
 
 app.get("/owner/:id", (req, res) => {
   const { id } = req.params;
-  const sql = "SELECT * FROM owner WHERE id = ?";
+  const sql = "SELECT * FROM owner WHERE id = ? LIMIT 1";
   db.query(sql, [id], (err, results) => {
     if (err) return res.status(500).json({ message: "Database error" });
     if (results.length === 0) return res.status(404).json({ message: "Owner not found" });
@@ -928,6 +1010,7 @@ app.post("/login", async (req, res) => {
       if (isMatch) {
         return res.status(200).json({
           success: true,
+          username: staff.username,
           message: "Staff login successful",
           role: staff.role || "staff",
           userId: staff.id,

@@ -154,55 +154,32 @@ fetch('http://localhost:3000/records')
 
 
 //========================
-//Logout session
+// Logout Session
 //========================
- const profileToggle = document.getElementById('profile-toggle');
-  const profileDropdown = document.getElementById('profile-dropdown');
-  const logoutBtn = document.getElementById('logout-btn');
+const profileToggle = document.getElementById('profile-toggle');
+const profileDropdown = document.getElementById('profile-dropdown');
+const logoutBtn = document.getElementById('logout-btn');
 
-  profileToggle.addEventListener('click', () => {
-    profileDropdown.classList.toggle('show');
-  });
+profileToggle.addEventListener('click', () => {
+  profileDropdown.classList.toggle('show');
+});
 
- 
-  document.addEventListener('click', (e) => {
-    if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
-      profileDropdown.classList.remove('show');
-    }
-  });
+document.addEventListener('click', (e) => {
+  if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+    profileDropdown.classList.remove('show');
+  }
+});
 
-
-  logoutBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.href = "login.html"; 
-  });
- function getTypeClass(activity) {
-  const msg = activity.message.toLowerCase();
-   const type = (activity.type || "").toLowerCase();
-  
-  if (type === "lowstock") return "lowStock";
-  if (type === "productadded") return "added";
-  if (type === "productdeleted") return "deleted";
-  if (type === "productrestocked") return "restocked";
-  if (type === "productupdated") return "productUpdated";
+logoutBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "login.html";
+});
 
 
-  if (msg.includes("low stock")) return "lowStock";
-  if (msg.includes("added")) return "added";
-  if (msg.includes("deleted")) return "deleted";
-  if (msg.includes("restocked")) return "restocked";
-  if (msg.includes("updated")) return "productUpdated";
+const socket = io();
 
-  return "default";
-}
-  
-//========================
-// logs notification
-//========================
-  const socket = io();
 
 function timeAgo(date) {
   const now = new Date();
@@ -221,16 +198,18 @@ function getTypeClass(activity) {
 
   if (type === "lowstock" || msg.includes("low stock")) return "lowStock";
   if (type === "productupdated" || msg.includes("product updated")) return "Updated";
-  if (type === "productupdated" || msg.includes("added")) return "added";
-  if (type === "productupdated" || msg.includes("deleted")) return "deleted";
-  
+  if (type === "productadded" || msg.includes("added")) return "added";
+  if (type === "productdeleted" || msg.includes("deleted")) return "deleted";
+  if (type === "productrestocked" || msg.includes("restocked")) return "restocked";
+
   if (type === "itemupdated" || msg.includes("item updated")) return "Updated";
-  if (type === "itemupdated" || msg.includes("added")) return "added";
-  if (type === "itemupdated" || msg.includes("deleted")) return "deleted";
-  if (type === "itemupdated" || msg.includes("restocked")) return "restocked";
-  
+  if (type === "itemadded" || msg.includes("added")) return "added";
+  if (type === "itemdeleted" || msg.includes("deleted")) return "deleted";
+  if (type === "itemrestocked" || msg.includes("restocked")) return "restocked";
+
   return "default";
 }
+
 
 function renderActivity(a) {
   const li = document.createElement("li");
@@ -242,46 +221,56 @@ function renderActivity(a) {
   return li;
 }
 
-// ✅ Filtering logic
 function shouldShowActivity(activity) {
   const settings = JSON.parse(localStorage.getItem("notificationSettings") || "{}");
   const msg = (activity.message || "").toLowerCase();
   const type = (activity.type || "").toLowerCase();
 
-  // 🔒 Check each notification type
   if (!settings.lowStock && (msg.includes("low stock") || type === "lowstock")) return false;
   if (!settings.productUpdated && (msg.includes("product updated") || type === "productupdated")) return false;
   if (!settings.productUpdated && (msg.includes("deleted") || type === "productupdated")) return false;
   if (!settings.productUpdated && (msg.includes("added") || type === "productupdated")) return false;
 
-  if (!settings.itemUpdated && (msg.includes("deleted ") || type === "itemupdated")) return false;
-  if (!settings.itemUpdated && (msg.includes("restocked ") || type === "itemupdated")) return false;
-  if (!settings.itemUpdated && (msg.includes("added ") || type === "itemupdated")) return false;
+  if (!settings.itemUpdated && (msg.includes("deleted") || type === "itemupdated")) return false;
+  if (!settings.itemUpdated && (msg.includes("restocked") || type === "itemupdated")) return false;
+  if (!settings.itemUpdated && (msg.includes("added") || type === "itemupdated")) return false;
 
   return true;
 }
 
 async function loadActivities() {
-  const res = await fetch("http://localhost:3000/activities");
-  const activities = await res.json();
-  const list = document.getElementById("activityList");
-  list.innerHTML = "";
+  try {
+    const res = await fetch("http://localhost:3000/activities");
+    const activities = await res.json();
+    const list = document.getElementById("activityList");
+    list.innerHTML = "";
 
-  activities.forEach(a => {
-    if (shouldShowActivity(a)) {
-      list.appendChild(renderActivity(a));
-    }
-  });
+    const now = new Date();
+    const daysLimit = 1; 
+
+    activities.forEach(a => {
+      const activityDate = new Date(a.time);
+      const diffDays = (now - activityDate) / (1000 * 60 * 60 * 24);
+
+    
+      if (diffDays > daysLimit) return;
+
+      if (shouldShowActivity(a)) {
+        list.appendChild(renderActivity(a));
+      }
+    });
+  } catch (err) {
+    console.error("Error loading activities:", err);
+  }
 }
 
-// Realtime listener
+
 socket.on("new-activity", (activity) => {
   if (!shouldShowActivity(activity)) return;
   const list = document.getElementById("activityList");
   list.prepend(renderActivity(activity));
 });
 
-// Initial load
-loadActivities();
 
+loadActivities();
 });

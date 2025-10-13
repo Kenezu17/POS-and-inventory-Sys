@@ -3,220 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="pos.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <title>Milk Tea POS</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-    }
 
-    /* Top Navbar */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fff;
-      padding: 10px 20px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .navbar .logo {
-      font-weight: bold;
-      font-size: 20px;
-    }
-
-    .navbar .right {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .navbar button {
-      padding: 6px 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: #fff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .navbar button:hover {
-      background: #000;
-      color: #fff;
-      transform: scale(1.05);
-    }
-
-    /* Layout */
-    .container {
-      display: flex;
-      height: calc(100vh - 50px);
-    }
-
-    .products-section {
-      flex: 3;
-      padding: 20px;
-    }
-
-    .filters {
-      margin-bottom: 10px;
-    }
-
-    .filters button {
-      padding: 6px 12px;
-      margin-right: 6px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: #fff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .filters button:hover {
-      background: #000;
-      color: #fff;
-      transform: scale(1.05);
-    }
-
-    .filters button.active {
-      background: #000;
-      color: #fff;
-    }
-
-    .products-grid {
-      border: 1px solid #e0e0e0;
-      background: #fff;
-      height: calc(100% - 50px);
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    /* Current Order Sidebar */
-    .order-sidebar {
-      flex: 1;
-      border-left: 1px solid #e0e0e0;
-      background: #fff;
-      padding: 20px;
-    }
-
-    .order-sidebar h3 {
-      margin-top: 0;
-    }
-
-    .order-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
-    .totals {
-      margin-top: 20px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .buttons {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .buttons button {
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.3s ease;
-    }
-
-    .buttons button:hover {
-      transform: scale(1.05);
-      opacity: 0.9;
-    }
-
-    .process-btn {
-      background: #6c757d;
-      color: #fff;
-    }
-
-    .cash-btn {
-      background: #fff;
-      border: 1px solid #ddd;
-    }
-
-    .gcash-btn {
-      background: #fff;
-      border: 1px solid #ddd;
-    }
-
-    .print-btn {
-      background: #fff;
-      border: 1px solid #ddd;
-    }
-
-  </style>
 </head>
 <body>
 
-  <!-- Navbar -->
+  <div id="toast"></div>
   <div class="navbar">
     <div class="logo">Welcome</div>
     <div class="right">
-      <span>👤 Staff: John Doe</span>
-      <button>📊 Reports</button>
-      <!-- 🎤 Voice Command Button -->
-      <button title="Enable Voice Commands">🎤 Voice</button>
-      <button>⚙️</button>
-      <button>⏻ Logout</button>
+      <div class="profile" >
+      <img  alt="no image" class="profilepic" >
+      </div>
+      <span id="name">John Doe</span>
+      <button title="Enable Voice Commands" class="voice">
+  <i class='bx bx-microphone'></i> Voice
+</button>
+<button class="Logout">
+  <i class='bx bx-power-off'></i> Logout
+</button>
+
     </div>
   </div>
 
   <!-- Main Container -->
   <div class="container">
     <!-- Products Section -->
-    <div class="products-section">
-      <div class="filters">
-        <button class="active">All</button>
-        <button>Milk Tea</button>
-        <button>Fruit Tea</button>
-        <button>Smoothie</button>
-        <button>Add-ons</button>
-      </div>
+   <div class="products-section">
+   <div class="filters">
+    <button class="active" data-filter="all">All</button>
+    <button data-filter="milktea">Milk Tea</button>
+    <button data-filter="coffee">Coffee</button>
+    <button data-filter="snacks">Snack</button>
+  </div>
 
-      <div class="products-grid">
-        <!-- Example Product -->
+  <div class="products-grid">
+    <div class="product-item" data-category="all">
+      
+    </div>
+
+    <div class="product-item" data-category="milktea">
+      
+    </div>
+
+    <div class="product-item" data-category="coffee">
+      
+    </div>
+
+    <div class="product-item" data-category="snacks">
+      
+    </div>
+  </div>
+</div>
+
+
+   <div class="products-grid">
+   
         <div class="order-item">
-          <span>Pudding</span>
-          <span>₱20</span>
+         
         </div>
       </div>
-    </div>
 
     <!-- Order Sidebar -->
     <div class="order-sidebar">
       <h3>Current Order</h3>
 
-      <div class="order-item">
-        <span>Pudding</span>
-        <span>₱20</span>
-      </div>
+      <div class="order-item"></div>
 
       <div class="totals">
         <p>Subtotal: ₱0.00</p>
         <p>Total: ₱0.00</p>
       </div>
 
-      <div class="buttons">
-        <button class="process-btn">Process Payment</button>
-        <button class="cash-btn">💵 Cash</button>
-        <button class="gcash-btn">💳 GCash</button>
-        <button class="print-btn">🖨️ Print Receipt</button>
+   <div class="buttons">
+    <button class="clear-btn">
+     <i class='bx bx-brush'></i> Clear Order
+   </button>
+
+  <button class="cash-btn">
+    <i class='bx bx-money-withdraw'></i> Cash
+  </button>
+  <div class="left">
+  <button class="gcash-btn">
+    <img src="/uploads/glogo.png" alt="logo" class="g">
+    <span class="g-name">GCash</span>
+  </button>
+</div>
+
+  <button class="print-btn">
+    <i class='bx bx-printer'></i> Print Receipt
+  </button>
+</div>
+
+ <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2>GCash Payment</h2>
+      <div class="g-frame">
+      <img class="gcash" src="/uploads/gcash.jpg" >
       </div>
+      <button class="done-btn" id="doneBtn">Done</button>
+      <button class="cancel-btn" id="cancelBtn">Cancel</button>
     </div>
   </div>
 
+ 
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="spinner" id="spinner"></div>
+    <div class="checkmark" id="checkmark">✅</div>
+    <h3 id="loadingText">Processing payment...</h3>
+  </div>
+</div>
+ 
+<div id="confirmModal" class="modals">
+  <div class="modal-content">
+    <p id="confirmMessage">Are you sure?</p>
+    <div class="modal-buttons">
+      <button id="confirmYes" class="yes-btn">Yes</button>
+      <button id="confirmNo" class="no-btn">No</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+    </div>
+  </div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="pos.js"></script>
 </html>

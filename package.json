@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Kenezu17/POS-and-inventory-Sys#readme",
   "dependencies": {
+    "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
